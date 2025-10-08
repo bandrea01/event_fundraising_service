@@ -1,2 +1,114 @@
-package it.unisalento.music_virus_project.event_campaign_service.service.impl;public class VenueRequestServiceImpl {
+package it.unisalento.music_virus_project.event_campaign_service.service.impl;
+
+import it.unisalento.music_virus_project.event_campaign_service.domain.entity.Event;
+import it.unisalento.music_virus_project.event_campaign_service.domain.entity.VenueRequest;
+import it.unisalento.music_virus_project.event_campaign_service.domain.enums.EventStatus;
+import it.unisalento.music_virus_project.event_campaign_service.domain.enums.VenueRequestStatus;
+import it.unisalento.music_virus_project.event_campaign_service.dto.venue.VenueRequestCreateRequest;
+import it.unisalento.music_virus_project.event_campaign_service.dto.venue.VenueRequestDecisionRequest;
+import it.unisalento.music_virus_project.event_campaign_service.dto.venue.VenueRequestResponse;
+import it.unisalento.music_virus_project.event_campaign_service.exceptions.BadRequestException;
+import it.unisalento.music_virus_project.event_campaign_service.exceptions.ForbiddenActionException;
+import it.unisalento.music_virus_project.event_campaign_service.exceptions.NotFoundException;
+import it.unisalento.music_virus_project.event_campaign_service.repositories.EventRepository;
+import it.unisalento.music_virus_project.event_campaign_service.repositories.VenueRequestRepository;
+import it.unisalento.music_virus_project.event_campaign_service.service.VenueRequestService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class VenueRequestServiceImpl implements VenueRequestService {
+
+    private final VenueRequestRepository venueRequestRepository;
+    private final EventRepository eventRepository;
+
+    public VenueRequestServiceImpl(VenueRequestRepository venueRequestRepository,
+                                   EventRepository eventRepository) {
+        this.venueRequestRepository = venueRequestRepository;
+        this.eventRepository = eventRepository;
+    }
+
+    @Override
+    @Transactional
+    public VenueRequestResponse create(VenueRequestCreateRequest request, String requesterArtistId) {
+        Event e = eventRepository.findById(request.getEventId())
+                .orElseThrow(() -> new NotFoundException("Evento non trovato."));
+        if (!e.getArtistId().equals(requesterArtistId)) {
+            throw new ForbiddenActionException("Non puoi inviare richieste per un evento di un altro artista.");
+        }
+        if (e.getStatus() != EventStatus.DRAFT) {
+            throw new BadRequestException("Puoi contattare un venue solo quando l'evento è in DRAFT.");
+        }
+
+        VenueRequest vr = new VenueRequest();
+        vr.setEventId(request.getEventId());
+        vr.setVenueId(request.getVenueId());
+        vr.setStatus(VenueRequestStatus.PENDING);
+
+        VenueRequest saved = venueRequestRepository.save(vr);
+        return toResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public VenueRequestResponse decide(String venueRequestId, String requesterVenueId, VenueRequestDecisionRequest request) {
+        VenueRequest vr = venueRequestRepository.findById(venueRequestId)
+                .orElseThrow(() -> new NotFoundException("Richiesta venue non trovata."));
+        if (!vr.getVenueId().equals(requesterVenueId)) {
+            throw new ForbiddenActionException("Non puoi decidere richieste indirizzate a un altro venue.");
+        }
+        if (vr.getStatus() != VenueRequestStatus.PENDING) {
+            throw new BadRequestException("La richiesta è già stata decisa.");
+        }
+
+        vr.setStatus(request.getStatus());
+        vr.setCoFundingAmount(request.getCoFundingAmount());
+        vr.setBenefitDescription(request.getBenefitDescription());
+        vr.setDecisionAt(Instant.now());
+
+        VenueRequest saved = venueRequestRepository.save(vr);
+
+        if (request.getStatus() == VenueRequestStatus.ACCEPTED) {
+            Event e = eventRepository.findById(vr.getEventId())
+                    .orElseThrow(() -> new NotFoundException("Evento non trovato."));
+            if (e.getStatus() != EventStatus.DRAFT) {
+                throw new BadRequestException("Evento non più in DRAFT: non può essere assegnato al venue.");
+            }
+            e.setVenueId(vr.getVenueId());
+            eventRepository.save(e);
+        }
+
+        return toResponse(saved);
+    }
+
+    @Override
+    public List<VenueRequestResponse> listByVenueAndStatus(String venueId, String status) {
+        VenueRequestStatus st = VenueRequestStatus.valueOf(status);
+        return venueRequestRepository.findByVenueIdAndStatus(venueId, st)
+                .stream().map(this::toResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<VenueRequestResponse> listByEvent(String eventId) {
+        return venueRequestRepository.findByEventId(eventId)
+                .stream().map(this::toResponse).collect(Collectors.toList());
+    }
+
+    private VenueRequestResponse toResponse(VenueRequest v) {
+        VenueRequestResponse dto = new VenueRequestResponse();
+        dto.setId(v.getId());
+        dto.setEventId(v.getEventId());
+        dto.setVenueId(v.getVenueId());
+        dto.setStatus(v.getStatus());
+        dto.setCoFundingAmount(v.getCoFundingAmount());
+        dto.setBenefitDescription(v.getBenefitDescription());
+        dto.setDecisionAt(v.getDecisionAt());
+        dto.setCreatedAt(v.getCreatedAt());
+        dto.setUpdatedAt(v.getUpdatedAt());
+        return dto;
+    }
 }

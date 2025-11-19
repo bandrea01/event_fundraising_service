@@ -1,6 +1,6 @@
 package it.unisalento.music_virus_project.event_campaign_service.dto.contribution;
 
-import it.unisalento.music_virus_project.event_campaign_service.domain.enums.Visibility;
+import it.unisalento.music_virus_project.event_campaign_service.domain.enums.ContributionVisibility;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
@@ -18,7 +18,7 @@ public class ContributionCreateRequest {
     private BigDecimal amount;
 
     @NotNull
-    private Visibility visibility; // PUBLIC o ANONYMOUS
+    private ContributionVisibility contributionVisibility; // PUBLIC o ANONYMOUS
 
     public ContributionCreateRequest() {}
 
@@ -29,6 +29,6 @@ public class ContributionCreateRequest {
     public void setFanId(String fanId) { this.fanId = fanId; }
     public BigDecimal getAmount() { return amount; }
     public void setAmount(BigDecimal amount) { this.amount = amount; }
-    public Visibility getVisibility() { return visibility; }
-    public void setVisibility(Visibility visibility) { this.visibility = visibility; }
+    public ContributionVisibility getVisibility() { return contributionVisibility; }
+    public void setVisibility(ContributionVisibility contributionVisibility) { this.contributionVisibility = contributionVisibility; }
 }

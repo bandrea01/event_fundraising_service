@@ -1,9 +1,6 @@
 package it.unisalento.music_virus_project.event_campaign_service.service.impl;
 
-import it.unisalento.music_virus_project.event_campaign_service.domain.entity.Event;
-import it.unisalento.music_virus_project.event_campaign_service.domain.entity.VenueRequest;
 import it.unisalento.music_virus_project.event_campaign_service.domain.enums.EventStatus;
-import it.unisalento.music_virus_project.event_campaign_service.domain.enums.VenueRequestStatus;
 import it.unisalento.music_virus_project.event_campaign_service.dto.venue.VenueRequestCreateRequest;
 import it.unisalento.music_virus_project.event_campaign_service.dto.venue.VenueRequestDecisionRequest;
 import it.unisalento.music_virus_project.event_campaign_service.dto.venue.VenueRequestResponse;
@@ -11,7 +8,6 @@ import it.unisalento.music_virus_project.event_campaign_service.exceptions.BadRe
 import it.unisalento.music_virus_project.event_campaign_service.exceptions.ForbiddenActionException;
 import it.unisalento.music_virus_project.event_campaign_service.exceptions.NotFoundException;
 import it.unisalento.music_virus_project.event_campaign_service.repositories.EventRepository;
-import it.unisalento.music_virus_project.event_campaign_service.repositories.VenueRequestRepository;
 import it.unisalento.music_virus_project.event_campaign_service.service.VenueRequestService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +31,7 @@ public class VenueRequestServiceImpl implements VenueRequestService {
     @Override
     @Transactional
     public VenueRequestResponse create(VenueRequestCreateRequest request, String requesterArtistId) {
-        Event e = eventRepository.findById(request.getEventId())
+        OldEvent e = eventRepository.findById(request.getEventId())
                 .orElseThrow(() -> new NotFoundException("Evento non trovato."));
         if (!e.getArtistId().equals(requesterArtistId)) {
             throw new ForbiddenActionException("Non puoi inviare richieste per un evento di un altro artista.");
@@ -73,7 +69,7 @@ public class VenueRequestServiceImpl implements VenueRequestService {
         VenueRequest saved = venueRequestRepository.save(vr);
 
         if (request.getStatus() == VenueRequestStatus.ACCEPTED) {
-            Event e = eventRepository.findById(vr.getEventId())
+            OldEvent e = eventRepository.findById(vr.getEventId())
                     .orElseThrow(() -> new NotFoundException("Evento non trovato."));
             if (e.getStatus() != EventStatus.DRAFT) {
                 throw new BadRequestException("Evento non più in DRAFT: non può essere assegnato al venue.");

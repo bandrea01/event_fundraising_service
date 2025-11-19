@@ -1,7 +1,5 @@
 package it.unisalento.music_virus_project.event_campaign_service.dto.venue;
 
-import it.unisalento.music_virus_project.event_campaign_service.domain.enums.VenueRequestStatus;
-
 import java.math.BigDecimal;
 import java.time.Instant;
 

@@ -9,9 +9,11 @@ import java.util.List;
 
 public interface EventRepository extends MongoRepository<Event, String> {
 
-    List<Event> findByStatus(EventStatus status);
-
+    Event findByEventId(String eventId);
+    Event findByCampaignId(String campaignId);
     List<Event> findByArtistId(String artistId);
+    List<Event> findByVenueId(String venueId);
+    List<Event> findByStatus(EventStatus status);
+    List<Event> findByEventDateBetween(Instant startDate, Instant endDate);
 
-    List<Event> findByStatusAndEventDateAfter(EventStatus status, Instant date);
 }

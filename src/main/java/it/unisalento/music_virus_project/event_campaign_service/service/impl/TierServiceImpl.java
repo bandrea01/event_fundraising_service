@@ -1,7 +1,5 @@
 package it.unisalento.music_virus_project.event_campaign_service.service.impl;
 
-import it.unisalento.music_virus_project.event_campaign_service.domain.entity.Event;
-import it.unisalento.music_virus_project.event_campaign_service.domain.entity.Tier;
 import it.unisalento.music_virus_project.event_campaign_service.domain.enums.EventStatus;
 import it.unisalento.music_virus_project.event_campaign_service.dto.tier.TierCreateRequest;
 import it.unisalento.music_virus_project.event_campaign_service.dto.tier.TierResponse;
@@ -9,7 +7,7 @@ import it.unisalento.music_virus_project.event_campaign_service.exceptions.BadRe
 import it.unisalento.music_virus_project.event_campaign_service.exceptions.ForbiddenActionException;
 import it.unisalento.music_virus_project.event_campaign_service.exceptions.NotFoundException;
 import it.unisalento.music_virus_project.event_campaign_service.repositories.EventRepository;
-import it.unisalento.music_virus_project.event_campaign_service.repositories.TierRepository;
+import it.unisalento.music_virus_project.event_campaign_service.repositories.FundraisingRepository;
 import it.unisalento.music_virus_project.event_campaign_service.service.TierService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,18 +18,18 @@ import java.util.stream.Collectors;
 @Service
 public class TierServiceImpl implements TierService {
 
-    private final TierRepository tierRepository;
+    private final FundraisingRepository fundraisingRepository;
     private final EventRepository eventRepository;
 
-    public TierServiceImpl(TierRepository tierRepository, EventRepository eventRepository) {
-        this.tierRepository = tierRepository;
+    public TierServiceImpl(FundraisingRepository fundraisingRepository, EventRepository eventRepository) {
+        this.fundraisingRepository = fundraisingRepository;
         this.eventRepository = eventRepository;
     }
 
     @Override
     @Transactional
     public TierResponse create(TierCreateRequest request, String requesterArtistId) {
-        Event e = eventRepository.findById(request.getEventId())
+        OldEvent e = eventRepository.findById(request.getEventId())
                 .orElseThrow(() -> new NotFoundException("Evento non trovato."));
         if (!e.getArtistId().equals(requesterArtistId)) {
             throw new ForbiddenActionException("Non puoi creare tier per un evento di un altro artista.");
@@ -42,14 +40,14 @@ public class TierServiceImpl implements TierService {
 
         Tier t = new Tier(request.getEventId(), request.getLabel(), request.getMinAmount(), request.getBenefits());
 
-        Tier saved = tierRepository.save(t);
+        Tier saved = fundraisingRepository.save(t);
 
         return toResponse(saved);
     }
 
     @Override
     public List<TierResponse> listByEvent(String eventId) {
-        return tierRepository.findByEventIdOrderByMinAmountAsc(eventId)
+        return fundraisingRepository.findByEventIdOrderByMinAmountAsc(eventId)
                 .stream().map(this::toResponse).collect(Collectors.toList());
     }
 

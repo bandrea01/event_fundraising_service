@@ -1,7 +1,7 @@
 package it.unisalento.music_virus_project.event_campaign_service.dto.contribution;
 
 import it.unisalento.music_virus_project.event_campaign_service.domain.enums.ContributionStatus;
-import it.unisalento.music_virus_project.event_campaign_service.domain.enums.Visibility;
+import it.unisalento.music_virus_project.event_campaign_service.domain.enums.ContributionVisibility;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -12,7 +12,7 @@ public class ContributionResponse {
     private String eventId;
     private String fanId;
     private BigDecimal amount;
-    private Visibility visibility;
+    private ContributionVisibility contributionVisibility;
     private ContributionStatus status;
     private Instant createdAt;
     private Instant updatedAt;
@@ -28,8 +28,8 @@ public class ContributionResponse {
     public void setFanId(String fanId) { this.fanId = fanId; }
     public BigDecimal getAmount() { return amount; }
     public void setAmount(BigDecimal amount) { this.amount = amount; }
-    public Visibility getVisibility() { return visibility; }
-    public void setVisibility(Visibility visibility) { this.visibility = visibility; }
+    public ContributionVisibility getVisibility() { return contributionVisibility; }
+    public void setVisibility(ContributionVisibility contributionVisibility) { this.contributionVisibility = contributionVisibility; }
     public ContributionStatus getStatus() { return status; }
     public void setStatus(ContributionStatus status) { this.status = status; }
     public Instant getCreatedAt() { return createdAt; }

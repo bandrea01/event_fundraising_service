@@ -1,7 +1,5 @@
 package it.unisalento.music_virus_project.event_campaign_service.service.impl;
 
-import it.unisalento.music_virus_project.event_campaign_service.domain.entity.Contribution;
-import it.unisalento.music_virus_project.event_campaign_service.domain.entity.Event;
 import it.unisalento.music_virus_project.event_campaign_service.domain.enums.ContributionStatus;
 import it.unisalento.music_virus_project.event_campaign_service.domain.enums.EventStatus;
 import it.unisalento.music_virus_project.event_campaign_service.dto.contribution.ContributionCreateRequest;
@@ -33,7 +31,7 @@ public class ContributionServiceImpl implements ContributionService {
     @Override
     @Transactional
     public ContributionResponse contribute(ContributionCreateRequest request) {
-        Event event = eventRepository.findById(request.getEventId())
+        OldEvent event = eventRepository.findById(request.getEventId())
                 .orElseThrow(() -> new NotFoundException("Evento non trovato."));
         if (event.getStatus() != EventStatus.LIVE) {
             throw new BadRequestException("Puoi contribuire solo a campagne LIVE.");
@@ -42,7 +40,7 @@ public class ContributionServiceImpl implements ContributionService {
             throw new BadRequestException("Importo non valido.");
         }
 
-        Contribution c = new Contribution(
+        OldContribution c = new OldContribution(
                 request.getEventId(),
                 request.getFanId(),
                 request.getAmount(),
@@ -50,7 +48,7 @@ public class ContributionServiceImpl implements ContributionService {
         );
         c.setStatus(ContributionStatus.AUTHORIZED);
 
-        Contribution saved = contributionRepository.save(c);
+        OldContribution saved = contributionRepository.save(c);
 
         BigDecimal current = event.getCurrentAmount() == null ? BigDecimal.ZERO : event.getCurrentAmount();
         BigDecimal newTotal = current.add(request.getAmount());
@@ -77,7 +75,7 @@ public class ContributionServiceImpl implements ContributionService {
                 .stream().map(this::toResponse).collect(Collectors.toList());
     }
 
-    private ContributionResponse toResponse(Contribution c) {
+    private ContributionResponse toResponse(OldContribution c) {
         ContributionResponse dto = new ContributionResponse();
         dto.setId(c.getId());
         dto.setEventId(c.getEventId());

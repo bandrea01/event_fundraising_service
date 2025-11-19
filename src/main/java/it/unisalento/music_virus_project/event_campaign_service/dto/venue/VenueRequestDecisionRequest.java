@@ -1,6 +1,5 @@
 package it.unisalento.music_virus_project.event_campaign_service.dto.venue;
 
-import it.unisalento.music_virus_project.event_campaign_service.domain.enums.VenueRequestStatus;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 

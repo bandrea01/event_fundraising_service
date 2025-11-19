@@ -1,6 +1,5 @@
 package it.unisalento.music_virus_project.event_campaign_service.service.impl;
 
-import it.unisalento.music_virus_project.event_campaign_service.domain.entity.Event;
 import it.unisalento.music_virus_project.event_campaign_service.domain.enums.EventStatus;
 import it.unisalento.music_virus_project.event_campaign_service.dto.event.EventCreateRequest;
 import it.unisalento.music_virus_project.event_campaign_service.dto.event.EventResponse;
@@ -37,7 +36,7 @@ public class EventServiceImpl implements EventService {
             throw new BadRequestException("Obiettivo economico non valido.");
         }
 
-        Event e = new Event(
+        OldEvent e = new OldEvent(
                 request.getArtistId(),
                 request.getTitle(),
                 request.getDescription(),
@@ -50,14 +49,14 @@ public class EventServiceImpl implements EventService {
         e.setCurrentAmount(BigDecimal.ZERO);
         e.setStatus(EventStatus.DRAFT);
 
-        Event saved = eventRepository.save(e);
+        OldEvent saved = eventRepository.save(e);
         return toResponse(saved);
     }
 
     @Override
     @Transactional
     public EventResponse update(String eventId, String requesterArtistId, EventUpdateRequest request) {
-        Event e = eventRepository.findById(eventId)
+        OldEvent e = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Evento non trovato."));
         if (!e.getArtistId().equals(requesterArtistId)) {
             throw new ForbiddenActionException("Non puoi modificare un evento di un altro artista.");
@@ -80,14 +79,14 @@ public class EventServiceImpl implements EventService {
         e.setCity(request.getCity());
         e.setCountry(request.getCountry());
 
-        Event saved = eventRepository.save(e);
+        OldEvent saved = eventRepository.save(e);
         return toResponse(saved);
     }
 
     @Override
     @Transactional
     public void deleteDraft(String eventId, String requesterArtistId) {
-        Event e = eventRepository.findById(eventId)
+        OldEvent e = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Evento non trovato."));
         if (!e.getArtistId().equals(requesterArtistId)) {
             throw new ForbiddenActionException("Non puoi eliminare un evento di un altro artista.");
@@ -101,7 +100,7 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventResponse publish(String eventId, String requesterArtistId) {
-        Event e = eventRepository.findById(eventId)
+        OldEvent e = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Evento non trovato."));
         if (!e.getArtistId().equals(requesterArtistId)) {
             throw new ForbiddenActionException("Non puoi pubblicare un evento di un altro artista.");
@@ -113,7 +112,7 @@ public class EventServiceImpl implements EventService {
             throw new BadRequestException("Obiettivo economico non valido.");
         }
         e.setStatus(EventStatus.LIVE);
-        Event saved = eventRepository.save(e);
+        OldEvent saved = eventRepository.save(e);
         return toResponse(saved);
     }
 
@@ -136,7 +135,7 @@ public class EventServiceImpl implements EventService {
                 .stream().map(this::toResponse).collect(Collectors.toList());
     }
 
-    private EventResponse toResponse(Event e) {
+    private EventResponse toResponse(OldEvent e) {
         EventResponse dto = new EventResponse();
         dto.setId(e.getId());
         dto.setArtistId(e.getArtistId());

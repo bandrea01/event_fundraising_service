@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ContributionRepository extends MongoRepository<Contribution, String> {
 
-    List<Contribution> findByEventId(String eventId);
+    List<Contribution> findByFundraisingId(String fundraisingId);
+    List<Contribution> findByUserId(String userId);
 
-    List<Contribution> findByFanId(String fanId);
 }

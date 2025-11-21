@@ -16,7 +16,6 @@ repositories {
 }
 
 dependencies {
-	// ✅ SOLO lato resource server, niente JJWT qui
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 

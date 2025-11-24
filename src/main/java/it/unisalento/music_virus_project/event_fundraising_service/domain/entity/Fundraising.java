@@ -23,6 +23,7 @@ public class Fundraising {
     private String venueId;
 
     private String fundraisingName;
+    private BigDecimal currentAmount;
     private BigDecimal targetAmount;
     private FundraisingStatus status;
     private Instant eventDate;
@@ -34,6 +35,7 @@ public class Fundraising {
         this.artistId = artistId;
         this.venueId = venueId;
         this.fundraisingName = fundraisingName;
+        this.currentAmount = BigDecimal.ZERO;
         this.targetAmount = targetAmount;
         this.status = status;
         this.eventDate = eventDate;
@@ -70,6 +72,14 @@ public class Fundraising {
 
     public void setFundraisingName(String fundraisingName) {
         this.fundraisingName = fundraisingName;
+    }
+
+    public BigDecimal getCurrentAmount() {
+        return currentAmount;
+    }
+
+    public void setCurrentAmount(BigDecimal currentAmount) {
+        this.currentAmount = currentAmount;
     }
 
     public BigDecimal getTargetAmount() {

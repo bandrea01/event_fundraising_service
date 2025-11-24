@@ -14,6 +14,13 @@ public interface FundraisingRepository extends MongoRepository<Fundraising, Stri
     Fundraising findByFundraisingName(String fundraisingName);
     List<Fundraising> findByVenueId(String venueId);
     List<Fundraising> findByStatus(FundraisingStatus status);
+    List<Fundraising> findByArtistIdAndStatus(String artistId, FundraisingStatus status);
+    List<Fundraising> findByVenueIdAndStatus(String venueId, FundraisingStatus status);
     List<Fundraising> findByEventDate(Instant eventDate);
     List<Fundraising> findByEventDateAndVenueId(Instant eventDate, String venueId);
+    List<Fundraising> findByStatusAndEventDateBetween(
+            FundraisingStatus status,
+            Instant startDate,
+            Instant endDate
+    );
 }

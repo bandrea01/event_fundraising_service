@@ -1,34 +1,54 @@
 package it.unisalento.music_virus_project.event_fundraising_service.dto.contribution;
 
 import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.ContributionVisibility;
-import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
 public class ContributionCreateRequest {
 
-    @NotBlank
-    private String eventId;
-
-    @NotBlank
-    private String fanId;
-
-    @NotNull
-    @DecimalMin(value = "0.00", inclusive = false)
+    private String fundraisingId;
+    private String userId;
     private BigDecimal amount;
+    private ContributionVisibility visibility;
 
-    @NotNull
-    private ContributionVisibility contributionVisibility; // PUBLIC o ANONYMOUS
+    public ContributionCreateRequest(String fundraisingId, String userId, BigDecimal amount, ContributionVisibility visibility) {
+        this.fundraisingId = fundraisingId;
+        this.userId = userId;
+        this.amount = amount;
+        this.visibility = visibility;
+    }
 
     public ContributionCreateRequest() {}
 
-    // Getters/Setters
-    public String getEventId() { return eventId; }
-    public void setEventId(String eventId) { this.eventId = eventId; }
-    public String getFanId() { return fanId; }
-    public void setFanId(String fanId) { this.fanId = fanId; }
-    public BigDecimal getAmount() { return amount; }
-    public void setAmount(BigDecimal amount) { this.amount = amount; }
-    public ContributionVisibility getVisibility() { return contributionVisibility; }
-    public void setVisibility(ContributionVisibility contributionVisibility) { this.contributionVisibility = contributionVisibility; }
+    public String getFundraisingId() {
+        return fundraisingId;
+    }
+
+    public void setFundraisingId(String fundraisingId) {
+        this.fundraisingId = fundraisingId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public ContributionVisibility getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(ContributionVisibility visibility) {
+        this.visibility = visibility;
+    }
 }

@@ -1,0 +1,24 @@
+package it.unisalento.music_virus_project.event_fundraising_service.messaging.events;
+
+import java.math.BigDecimal;
+
+public class ContributionAddedEventDTO {
+    private String fundraisingId;
+    private BigDecimal amount;
+
+    public String getFundraisingId() {
+        return fundraisingId;
+    }
+
+    public void setFundraisingId(String fundraisingId) {
+        this.fundraisingId = fundraisingId;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+}

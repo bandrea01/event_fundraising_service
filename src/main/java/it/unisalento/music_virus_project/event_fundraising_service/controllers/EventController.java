@@ -1,73 +1,91 @@
 package it.unisalento.music_virus_project.event_fundraising_service.controllers;
 
+import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventListResponseDTO;
+import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventResponseDTO;
+import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventUpdateRequestDTO;
+import it.unisalento.music_virus_project.event_fundraising_service.service.IEventService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Instant;
 
 @RestController
 @RequestMapping("/api/events")
 @Validated
 public class EventController {
-//
-//    private final EventService eventService;
-//
-//    public EventController(EventService eventService) {
-//        this.eventService = eventService;
-//    }
-//
-//    @PostMapping
-//    public ResponseEntity<EventResponse> createEvent(
-//            @RequestHeader("X-Artist-Id") String artistId,
-//            @Valid @RequestBody EventCreateRequest request
-//    ) {
-//        request.setArtistId(artistId); // forza coerenza con header
-//        EventResponse created = eventService.create(request);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(created);
-//    }
-//
-//    @PutMapping("/{eventId}")
-//    public ResponseEntity<EventResponse> updateEvent(
-//            @PathVariable String eventId,
-//            @RequestHeader("X-Artist-Id") String artistId,
-//            @Valid @RequestBody EventUpdateRequest request
-//    ) {
-//        EventResponse updated = eventService.update(eventId, artistId, request);
-//        return ResponseEntity.ok(updated);
-//    }
-//
-//    @DeleteMapping("/{eventId}")
-//    public ResponseEntity<Void> deleteDraft(
-//            @PathVariable String eventId,
-//            @RequestHeader("X-Artist-Id") String artistId
-//    ) {
-//        eventService.deleteDraft(eventId, artistId);
-//        return ResponseEntity.noContent().build();
-//    }
-//
-//    @PostMapping("/{eventId}/publish")
-//    public ResponseEntity<EventResponse> publish(
-//            @PathVariable String eventId,
-//            @RequestHeader("X-Artist-Id") String artistId
-//    ) {
-//        EventResponse published = eventService.publish(eventId, artistId);
-//        return ResponseEntity.ok(published);
-//    }
-//
-//    @GetMapping("/{eventId}")
-//    public ResponseEntity<EventResponse> findById(@PathVariable String eventId) {
-//        return ResponseEntity.ok(eventService.findById(eventId));
-//    }
-//
-//    @GetMapping("/live")
-//    public ResponseEntity<List<EventResponse>> listLiveAfter(
-//            @RequestParam(name = "after", required = false)
-//            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant after
-//    ) {
-//        Instant pivot = (after == null) ? Instant.now() : after;
-//        return ResponseEntity.ok(eventService.findLiveAfter(pivot));
-//    }
-//
-//    @GetMapping("/artist/{artistId}")
-//    public ResponseEntity<List<EventResponse>> listByArtist(@PathVariable String artistId) {
-//        return ResponseEntity.ok(eventService.findByArtist(artistId));
-//    }
+
+    private final IEventService IEventService;
+
+    public EventController(IEventService IEventService) {
+        this.IEventService = IEventService;
+    }
+
+    @GetMapping()
+    public ResponseEntity<EventListResponseDTO> getAllEvents() {
+        var response = IEventService.getAllEvents();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/{eventId}")
+    public ResponseEntity<EventResponseDTO> getEventById(@PathVariable String eventId) {
+        var response = IEventService.getEventById(eventId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/fundraising/{fundraisingId}")
+    public ResponseEntity<EventResponseDTO> getEventByFundraisingId(@PathVariable String fundraisingId) {
+        var response = IEventService.getEventByFundraisingId(fundraisingId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/artist/{artistId}")
+    public ResponseEntity<EventListResponseDTO> getEventsByArtistId(@PathVariable String artistId) {
+        var response = IEventService.getEventsByArtistId(artistId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/venue/{venueId}")
+    public ResponseEntity<EventListResponseDTO> getEventsByVenueId(@PathVariable String venueId) {
+        var response = IEventService.getEventsByVenueId(venueId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<EventListResponseDTO> getEventsByStatus(@RequestParam String status) {
+        var response = IEventService.getEventsByStatus(status);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<EventListResponseDTO> getEventsByEventDate(@RequestParam Instant eventDate) {
+        var response = IEventService.getEventsByDate(eventDate);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<EventListResponseDTO> getEventsByDateRange(@RequestParam Instant startDate, @RequestParam Instant endDate) {
+        var response = IEventService.getEventsByDateRange(startDate, endDate);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PatchMapping
+    public ResponseEntity<EventResponseDTO> updateEvent(@RequestParam String eventId, @RequestBody EventUpdateRequestDTO updateRequest) {
+        var response = IEventService.updateEvent(eventId, updateRequest);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PatchMapping("/confirm/{eventId}")
+    public ResponseEntity<EventResponseDTO> confirmEvent(@PathVariable String eventId) {
+        var response = IEventService.confirmEvent(eventId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PatchMapping("/cancel/{eventId}")
+    public ResponseEntity<EventResponseDTO> cancelEventById(@PathVariable String eventId) {
+        var response = IEventService.cancelEventById(eventId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }

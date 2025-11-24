@@ -17,6 +17,8 @@ public class RabbitMqConfiguration {
 
     @Value("${app.rabbitmq.user-events-queue}")
     private String userEventsQueueName;
+    @Value ("${app.rabbitmq.contribution-events-queue}")
+    private String contributionEventsQueueName;
 
     @Bean
     public TopicExchange userEventsExchange() {
@@ -27,13 +29,22 @@ public class RabbitMqConfiguration {
     public Queue userEventsQueue() {
         return QueueBuilder.durable(userEventsQueueName).build();
     }
+    @Bean
+    public Queue contributionEventsQueue() {
+        return QueueBuilder.durable(contributionEventsQueueName).build();
+    }
 
     @Bean
     public Binding userRegisteredBinding(Queue userEventsQueue, TopicExchange userEventsExchange) {
-        // ascoltiamo TUTTI gli eventi user.* su una singola coda
         return BindingBuilder.bind(userEventsQueue)
                 .to(userEventsExchange)
                 .with("user.*");
+    }
+    @Bean
+    public Binding contributionAddedBinding(Queue contributionEventsQueue, TopicExchange userEventsExchange) {
+        return BindingBuilder.bind(contributionEventsQueue)
+                .to(userEventsExchange)
+                .with("contribution.*");
     }
 
     @Bean

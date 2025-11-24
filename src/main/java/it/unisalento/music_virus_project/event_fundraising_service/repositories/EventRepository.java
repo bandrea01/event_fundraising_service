@@ -14,6 +14,7 @@ public interface EventRepository extends MongoRepository<Event, String> {
     List<Event> findByArtistId(String artistId);
     List<Event> findByVenueId(String venueId);
     List<Event> findByStatus(EventStatus status);
+    List<Event> findByEventDate(Instant eventDate);
     List<Event> findByEventDateBetween(Instant startDate, Instant endDate);
 
 }

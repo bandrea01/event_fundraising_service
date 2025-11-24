@@ -89,12 +89,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiError> handleReadable(HttpMessageNotReadableException ex, HttpServletRequest req) {
+        ex.getMostSpecificCause();
         ApiError body = new ApiError(
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 "Malformed JSON request",
                 req.getRequestURI(),
-                Collections.singletonList(ex.getMostSpecificCause() != null ? ex.getMostSpecificCause().getMessage() : ex.getMessage())
+                Collections.singletonList(ex.getMostSpecificCause().getMessage())
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
@@ -109,5 +110,17 @@ public class GlobalExceptionHandler {
                 Collections.singletonList(ex.getMessage())
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiError> handleSamePlaceAndDateFundraisingException(SamePlaceAndDateFundraisingException ex, HttpServletRequest req) {
+        ApiError body = new ApiError(
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                ex.getMessage(),
+                req.getRequestURI(),
+                Collections.emptyList()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 }

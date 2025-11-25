@@ -1,0 +1,82 @@
+name: Build & Deploy event_fundriasing_service (Oracle VM)
+
+on:
+  push:
+    branches: [ main ]
+
+concurrency:
+  group: deploy-event-fundraising-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_test_sync_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Temurin JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: Build JAR
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean test --stacktrace
+          ./gradlew bootJar --stacktrace
+          ls -la build/libs
+
+      - name: Start ssh-agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.ORACLE_SSH_KEY }}
+
+      - name: Add host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "${{ secrets.ORACLE_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Ensure remote dirs
+        run: |
+          ssh ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} "\
+            mkdir -p /home/${{ secrets.ORACLE_USER }}/app \
+                     /home/${{ secrets.ORACLE_USER }}/app/event_fundraising_service \
+                     /home/${{ secrets.ORACLE_USER }}/app/event_fundraising_service/build \
+                     /home/${{ secrets.ORACLE_USER }}/app/event_fundraising_service/build/libs \
+          "
+
+      - name: Write remote .env via SSH
+        run: |
+          ssh ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} "cat > /home/${{ secrets.ORACLE_USER }}/app/event_fundraising_service/.env <<'EOF'
+          JWT_SECRET_B64=${{ secrets.JWT_SECRET_B64 }}
+          JWT_ISSUER=${{ secrets.JWT_ISSUER }}
+          JWT_EXPIRATION_MS=${{ secrets.JWT_EXPIRATION_MS }}
+          EOF
+          chmod 600 /home/${{ secrets.ORACLE_USER }}/app/event_fundraising_service/.env"
+
+      - name: Upload service artifacts
+        run: |
+          scp build/libs/*.jar \
+              ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }}:/home/${{ secrets.ORACLE_USER }}/app/event_fundraising_service/build/libs/app.jar
+          scp ./Dockerfile \
+            ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }}:/home/${{ secrets.ORACLE_USER }}/app/event_fundraising_service/Dockerfile
+
+      - name: Deploy with Docker Compose
+        run: |
+          ssh ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} "\
+            cd /home/${{ secrets.ORACLE_USER }}/app && \
+            docker compose up -d --build event-fundraising-service && \
+            docker compose ps"
+
+      - name: Optional HTTP healthcheck
+        if: ${{ success() && vars.HEALTHCHECK_URL != '' }}
+        run: |
+          for i in {1..12}; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "${{ vars.HEALTHCHECK_URL }}") || true
+            if [ "$code" = "200" ]; then exit 0; fi
+            sleep 5
+          done
+          exit 1

@@ -14,7 +14,6 @@ public class RabbitMqConfiguration {
 
     @Value("${app.rabbitmq.user-events-exchange}")
     private String userEventsExchangeName;
-
     @Value("${app.rabbitmq.user-events-queue}")
     private String userEventsQueueName;
     @Value ("${app.rabbitmq.contribution-events-queue}")

@@ -37,25 +37,25 @@ public class FundraisingController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/artist/{artistId}")
-    public ResponseEntity<FundraisingListResponseDTO> getFundraisingsByArtistId(@PathVariable String artistId) {
+    @GetMapping(params = "artistId")
+    public ResponseEntity<FundraisingListResponseDTO> getFundraisingsByArtistId(@RequestParam String artistId) {
         var response = IFundraisingService.getFundraisingsByArtistId(artistId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/venue/{venueId}")
-    public ResponseEntity<FundraisingListResponseDTO> getFundraisingsByVenueId(@PathVariable String venueId) {
+    @GetMapping(params = "venueId")
+    public ResponseEntity<FundraisingListResponseDTO> getFundraisingsByVenueId(@RequestParam String venueId) {
         FundraisingListResponseDTO response = IFundraisingService.getFundraisingsByVenueId(venueId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/status/{status}")
-    public ResponseEntity<FundraisingListResponseDTO> getFundraisingsByStatus(@PathVariable FundraisingStatus status) {
+    @GetMapping(params = "status")
+    public ResponseEntity<FundraisingListResponseDTO> getFundraisingsByStatus(@RequestParam FundraisingStatus status) {
         FundraisingListResponseDTO response = IFundraisingService.getFundraisingsByStatus(status);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/date")
+    @GetMapping(params = "eventDate")
     public ResponseEntity<FundraisingListResponseDTO> getFundraisingsByEventDate(
             @RequestParam String eventDate) {
         FundraisingListResponseDTO response = IFundraisingService.getFundraisingsByEventDate(
@@ -63,10 +63,10 @@ public class FundraisingController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping(params = {"artistId", "status"})
     public ResponseEntity<FundraisingListResponseDTO> getFundraisingsByArtistIdAndStatus(
-            @RequestParam(required = false) String artistId,
-            @RequestParam(required = false) FundraisingStatus status) {
+            @RequestParam String artistId,
+            @RequestParam FundraisingStatus status) {
         FundraisingListResponseDTO response;
         if (artistId != null && status != null) {
             response = IFundraisingService.getFundraisingsByArtistIdAndStatus(artistId, status);
@@ -76,10 +76,10 @@ public class FundraisingController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping(params = {"venueId", "status"})
     public ResponseEntity<FundraisingListResponseDTO> getFundraisingsByVenueIdAndStatus(
-            @RequestParam(required = false) String venueId,
-            @RequestParam(required = false) FundraisingStatus status) {
+            @RequestParam String venueId,
+            @RequestParam FundraisingStatus status) {
         FundraisingListResponseDTO response;
         if (venueId != null && status != null) {
             response = IFundraisingService.getFundraisingsByVenueIdAndStatus(venueId, status);
@@ -104,7 +104,7 @@ public class FundraisingController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ARTIST')")
+    @PreAuthorize("hasRole('ROLE_ARTIST')")
     @PatchMapping("/cancel/{fundraisingId}")
     public ResponseEntity<FundraisingResponseDTO> cancelFundraisingById(
             @AuthenticationPrincipal Jwt principal,

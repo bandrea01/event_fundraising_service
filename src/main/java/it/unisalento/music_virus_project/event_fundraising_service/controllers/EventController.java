@@ -52,26 +52,26 @@ public class EventController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping(params = "status")
     public ResponseEntity<EventListResponseDTO> getEventsByStatus(@RequestParam String status) {
         var response = IEventService.getEventsByStatus(status);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping(params= "eventDate")
     public ResponseEntity<EventListResponseDTO> getEventsByEventDate(@RequestParam Instant eventDate) {
         var response = IEventService.getEventsByDate(eventDate);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping(params = {"startDate", "endDate"})
     public ResponseEntity<EventListResponseDTO> getEventsByDateRange(@RequestParam Instant startDate, @RequestParam Instant endDate) {
         var response = IEventService.getEventsByDateRange(startDate, endDate);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PatchMapping
-    public ResponseEntity<EventResponseDTO> updateEvent(@RequestParam String eventId, @RequestBody EventUpdateRequestDTO updateRequest) {
+    @PatchMapping("/{eventId}")
+    public ResponseEntity<EventResponseDTO> updateEvent(@PathVariable String eventId, @RequestBody EventUpdateRequestDTO updateRequest) {
         var response = IEventService.updateEvent(eventId, updateRequest);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -112,7 +112,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(SamePlaceAndDateFundraisingException.class)
     public ResponseEntity<ApiError> handleSamePlaceAndDateFundraisingException(SamePlaceAndDateFundraisingException ex, HttpServletRequest req) {
         ApiError body = new ApiError(
                 HttpStatus.CONFLICT.value(),

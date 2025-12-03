@@ -201,7 +201,7 @@ public class FundraisingService implements IFundraisingService {
     private FundraisingListResponseDTO mapToDTOList(List<Fundraising> fundraisings) {
         FundraisingListResponseDTO responseDTO = new FundraisingListResponseDTO();
         for (Fundraising f : fundraisings) {
-            responseDTO.getFundraisings().add(mapToDTO(f));
+            responseDTO.addFundraising(mapToDTO(f));
         }
         return responseDTO;
     }

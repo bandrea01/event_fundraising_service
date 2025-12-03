@@ -6,6 +6,8 @@ import java.time.Instant;
 public class FundraisingCreateRequestDTO {
 
     private String artistId;
+    private String artist;
+    private String venueName;
     private String venueId;
     private Instant eventDate;
     private String fundraisingName;
@@ -22,12 +24,28 @@ public class FundraisingCreateRequestDTO {
         this.artistId = artistId;
     }
 
+    public String getArtist() {
+        return artist;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+
     public String getVenueId() {
         return venueId;
     }
 
     public void setVenueId(String venueId) {
         this.venueId = venueId;
+    }
+
+    public String getVenueName() {
+        return venueName;
+    }
+
+    public void setVenueName(String venueName) {
+        this.venueName = venueName;
     }
 
     public Instant getEventDate() {

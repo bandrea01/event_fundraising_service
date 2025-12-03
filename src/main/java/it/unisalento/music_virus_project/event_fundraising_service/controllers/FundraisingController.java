@@ -31,11 +31,11 @@ public class FundraisingController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping()
-    public ResponseEntity<FundraisingListResponseDTO> getAllFundraisings() {
-        var response = IFundraisingService.getAllFundraisings();
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+//    @GetMapping()
+//    public ResponseEntity<FundraisingListResponseDTO> getAllFundraisings() {
+//        var response = IFundraisingService.getAllFundraisings();
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
 
     @GetMapping(params = "artistId")
     public ResponseEntity<FundraisingListResponseDTO> getFundraisingsByArtistId(@RequestParam String artistId) {

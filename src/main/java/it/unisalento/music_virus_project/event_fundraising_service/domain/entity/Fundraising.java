@@ -114,26 +114,4 @@ public class Fundraising {
         this.createdAt = createdAt;
     }
 
-    //    public Status calculateStatus(Date now) {
-//        double totalContribution = this.contribution.getTotalContribution();
-//        boolean achieved = totalContribution >= targetAmount;
-//
-//        Date fundraisingEndDate = new Date(this.eventDate.getTime() - 24L * 60 * 60 * 1000); // 24 ore prima
-//
-//        if (this.status != Status.NOT_ACHIEVED) {
-//            return this.status;
-//        }
-//
-//        if (now.before(fundraisingEndDate)) {
-//            return achieved ? Status.ACHIEVED : Status.ACTIVE;
-//        } else {
-//            return achieved ? Status.ACHIEVED : Status.NOT_ACHIEVED;
-//        }
-//    }
-//
-//    public Status refreshStatus(Date now) {
-//        this.status = calculateStatus(now);
-//        return this.status;
-//    }
-
 }

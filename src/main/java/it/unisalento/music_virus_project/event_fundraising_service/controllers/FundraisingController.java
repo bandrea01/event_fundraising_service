@@ -15,7 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/fundraising")
+@RequestMapping("/api/event-fundraising/fundraising")
 @Validated
 public class FundraisingController {
 

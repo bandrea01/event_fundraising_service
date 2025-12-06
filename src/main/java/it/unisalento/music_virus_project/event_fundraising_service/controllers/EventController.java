@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 
 @RestController
-@RequestMapping("/api/events")
+@RequestMapping("/api/fundraising/event")
 @Validated
 public class EventController {
 

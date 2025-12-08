@@ -143,6 +143,8 @@ public class FundraisingService implements IFundraisingService {
         Fundraising fundraising = fundraisingRepository.findById(fundraisingId)
                 .orElseThrow(() -> new NotFoundException("Errore: Fundraising non trovato!"));
 
+        System.out.println("Fundraising artistId: " + fundraising.getArtistId());
+        System.out.println("Requesting artistId: " + artistId);
         //Only the artist who created the fundraising can cancel it
         if (!fundraising.getArtistId().equals(artistId)) {
             throw new ForbiddenActionException("Errore: Non sei autorizzato a cancellare questa raccolta fondi!");

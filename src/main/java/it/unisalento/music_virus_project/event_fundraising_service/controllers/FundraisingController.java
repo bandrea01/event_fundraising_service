@@ -109,7 +109,7 @@ public class FundraisingController {
     public ResponseEntity<FundraisingResponseDTO> cancelFundraisingById(
             @AuthenticationPrincipal Jwt principal,
             @PathVariable String fundraisingId) {
-        String artistId = principal.getClaimAsString("user_id");
+        String artistId = principal.getClaimAsString("userId");
         FundraisingResponseDTO response = IFundraisingService.cancelFundraisingById(artistId, fundraisingId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -24,4 +24,5 @@ public interface IFundraisingService {
     FundraisingResponseDTO cancelFundraisingById(String artistId, String fundraisingId);
     FundraisingListResponseDTO disableFundraisingsByUserId(String userId, Role role);
     FundraisingResponseDTO addContributionToFundraising(String fundraisingId, BigDecimal amount);
+    FundraisingResponseDTO confirmFundraisingById(String artistId, String fundraisingId);
 }

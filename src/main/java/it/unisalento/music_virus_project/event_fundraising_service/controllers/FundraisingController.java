@@ -114,4 +114,14 @@ public class FundraisingController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ARTIST')")
+    @PatchMapping("/confirm/{fundraisingId}")
+    public ResponseEntity<FundraisingResponseDTO> confirmFundraisingById(
+            @AuthenticationPrincipal Jwt principal,
+            @PathVariable String fundraisingId) {
+        String artistId = principal.getClaimAsString("userId");
+        FundraisingResponseDTO response = IFundraisingService.confirmFundraisingById(artistId, fundraisingId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }

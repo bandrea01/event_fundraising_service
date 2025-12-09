@@ -199,7 +199,8 @@ public class FundraisingService implements IFundraisingService {
             throw new ForbiddenActionException("Errore: La raccolta fondi deve essere completata prima di essere confermata!");
         }
 
-        fundraising.setStatus(FundraisingStatus.CONFIRMED);
+                fundraising.setStatus(FundraisingStatus.CONFIRMED);
+        fundraising = fundraisingRepository.save(fundraising);
 
         eventService.createEventFromFundraising(fundraising);
 

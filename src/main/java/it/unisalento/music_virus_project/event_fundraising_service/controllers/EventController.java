@@ -76,12 +76,6 @@ public class EventController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PatchMapping("/confirm/{eventId}")
-    public ResponseEntity<EventResponseDTO> confirmEvent(@PathVariable String eventId) {
-        var response = IEventService.confirmEvent(eventId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
     @PatchMapping("/cancel/{eventId}")
     public ResponseEntity<EventResponseDTO> cancelEventById(@PathVariable String eventId) {
         var response = IEventService.cancelEventById(eventId);

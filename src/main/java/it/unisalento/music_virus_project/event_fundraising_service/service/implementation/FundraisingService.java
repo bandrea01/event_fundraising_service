@@ -130,6 +130,7 @@ public class FundraisingService implements IFundraisingService {
         }
         if (request.getEventDate() != null) {
             fundraising.setEventDate(request.getEventDate());
+            fundraising.setExpirationDate(request.getEventDate().minusSeconds(Fundraising.EXPIRATION_OFFSET_SECONDS));
         }
 
         fundraising = fundraisingRepository.save(fundraising);
@@ -197,7 +198,8 @@ public class FundraisingService implements IFundraisingService {
                 fundraising.getCurrentAmount(),
                 fundraising.getTargetAmount(),
                 fundraising.getStatus(),
-                fundraising.getEventDate()
+                fundraising.getEventDate(),
+                fundraising.getExpirationDate()
         );
     }
     private FundraisingListResponseDTO mapToDTOList(List<Fundraising> fundraisings) {

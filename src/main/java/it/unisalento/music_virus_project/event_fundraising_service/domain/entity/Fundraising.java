@@ -14,6 +14,8 @@ import java.time.Instant;
 @CompoundIndex(name = "event_minamount_idx", def = "{'eventId': 1, 'minAmount': 1}")
 public class Fundraising {
 
+        public static final long EXPIRATION_OFFSET_SECONDS = 86400;
+
     @Id
     private String fundraisingId;
 
@@ -27,6 +29,7 @@ public class Fundraising {
     private BigDecimal targetAmount;
     private FundraisingStatus status;
     private Instant eventDate;
+    private Instant expirationDate;
 
     @CreatedDate
     private Instant createdAt;
@@ -40,6 +43,7 @@ public class Fundraising {
         this.status = status;
         this.eventDate = eventDate;
         this.createdAt = Instant.now();
+        this.expirationDate = eventDate.minusSeconds(EXPIRATION_OFFSET_SECONDS);
     }
 
     public String getFundraisingId() {
@@ -112,6 +116,14 @@ public class Fundraising {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Instant getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(Instant expirationDate) {
+        this.expirationDate = expirationDate;
     }
 
 }

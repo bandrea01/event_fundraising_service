@@ -14,8 +14,9 @@ public class FundraisingResponseDTO {
     private BigDecimal targetAmount;
     private FundraisingStatus status;
     private Instant eventDate;
+    private Instant expirationDate;
     
-    public FundraisingResponseDTO(String fundraisingId, String fundraisingName, String artistId, String venueId, BigDecimal currentAmount, BigDecimal targetAmount, FundraisingStatus status, Instant eventDate) {
+    public FundraisingResponseDTO(String fundraisingId, String fundraisingName, String artistId, String venueId, BigDecimal currentAmount, BigDecimal targetAmount, FundraisingStatus status, Instant eventDate, Instant expirationDate) {
         this.fundraisingId = fundraisingId;
         this.fundraisingName = fundraisingName;
         this.artistId = artistId;
@@ -24,6 +25,7 @@ public class FundraisingResponseDTO {
         this.targetAmount = targetAmount;
         this.status = status;
         this.eventDate = eventDate;
+        this.expirationDate = expirationDate;
     }
     public FundraisingResponseDTO() {
 
@@ -91,5 +93,13 @@ public class FundraisingResponseDTO {
 
     public void setEventDate(Instant eventDate) {
         this.eventDate = eventDate;
+    }
+
+    public Instant getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(Instant expirationDate) {
+        this.expirationDate = expirationDate;
     }
 }

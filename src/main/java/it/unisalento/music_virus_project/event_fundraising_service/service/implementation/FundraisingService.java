@@ -126,6 +126,13 @@ public class FundraisingService implements IFundraisingService {
             fundraising.setVenueId(request.getVenueId());
         }
         if (request.getTargetAmount() != null) {
+            if(request.getTargetAmount().compareTo(fundraising.getCurrentAmount()) < 0) {
+                throw new IllegalArgumentException("Errore: L'importo target non può essere inferiore all'importo attuale!");
+            }
+            if(fundraising.getStatus() == FundraisingStatus.ACHIEVED &&
+               request.getTargetAmount().compareTo(fundraising.getCurrentAmount()) > 0) {
+                fundraising.setStatus(FundraisingStatus.ACTIVE);
+            }
             fundraising.setTargetAmount(request.getTargetAmount());
         }
         if (request.getEventDate() != null) {
@@ -199,7 +206,7 @@ public class FundraisingService implements IFundraisingService {
             throw new ForbiddenActionException("Errore: La raccolta fondi deve essere completata prima di essere confermata!");
         }
 
-                fundraising.setStatus(FundraisingStatus.CONFIRMED);
+        fundraising.setStatus(FundraisingStatus.CONFIRMED);
         fundraising = fundraisingRepository.save(fundraising);
 
         eventService.createEventFromFundraising(fundraising);

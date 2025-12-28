@@ -4,9 +4,7 @@ import it.unisalento.music_virus_project.event_fundraising_service.domain.entity
 import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Fundraising;
 import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Role;
 import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.EventStatus;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventListResponseDTO;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventResponseDTO;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventUpdateRequestDTO;
+import it.unisalento.music_virus_project.event_fundraising_service.dto.event.*;
 import it.unisalento.music_virus_project.event_fundraising_service.exceptions.NotFoundException;
 import it.unisalento.music_virus_project.event_fundraising_service.repositories.EventRepository;
 import it.unisalento.music_virus_project.event_fundraising_service.service.IEventService;
@@ -14,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class EventService implements IEventService {
@@ -83,6 +83,24 @@ public class EventService implements IEventService {
     public EventListResponseDTO getEventsByDate(Instant date) {
         List<Event> events = eventRepository.findByEventDate(date);
         return mapToListDTO(events);
+    }
+
+    @Override
+    public EventVenueCounterListResponseDTO getEventVenueCounter() {
+        Map<String, Integer> counterMap = new HashMap<>();
+
+        List<Event> events = eventRepository.findAll();
+        for (Event event : events) {
+            String venueId = event.getVenueId();
+            if (venueId == null) continue;
+            counterMap.merge(venueId, 1, Integer::sum);
+        }
+
+        var response = counterMap.entrySet().stream()
+                .map(entry -> new EventVenueCounterResponseDTO(entry.getKey(), entry.getValue()))
+                .toList();
+
+        return new EventVenueCounterListResponseDTO(response);
     }
 
     @Override

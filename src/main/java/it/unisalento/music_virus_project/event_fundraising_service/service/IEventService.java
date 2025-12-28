@@ -2,6 +2,7 @@ package it.unisalento.music_virus_project.event_fundraising_service.service;
 
 import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Fundraising;
 import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Role;
+import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventVenueCounterListResponseDTO;
 import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventListResponseDTO;
 import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventResponseDTO;
 import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventUpdateRequestDTO;
@@ -17,6 +18,7 @@ public interface IEventService {
     EventListResponseDTO getEventsByStatus(String status);
     EventListResponseDTO getEventsByDateRange(Instant startDate, Instant endDate);
     EventListResponseDTO getEventsByDate(Instant date);
+    EventVenueCounterListResponseDTO getEventVenueCounter();
     EventResponseDTO updateEvent(String eventId, EventUpdateRequestDTO updateRequest);
     EventResponseDTO createEventFromFundraising(Fundraising fundraising);
     EventResponseDTO confirmEvent(String eventId);

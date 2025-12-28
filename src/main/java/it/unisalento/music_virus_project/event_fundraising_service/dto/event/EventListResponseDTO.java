@@ -1,5 +1,6 @@
 package it.unisalento.music_virus_project.event_fundraising_service.dto.event;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EventListResponseDTO {
@@ -9,7 +10,9 @@ public class EventListResponseDTO {
         this.events = events;
     }
 
-    public EventListResponseDTO() {}
+    public EventListResponseDTO() {
+        this.events = new ArrayList<>();
+    }
 
     public List<EventResponseDTO> getEvents() {
         return events;

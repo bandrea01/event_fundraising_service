@@ -12,8 +12,8 @@ import java.time.Instant;
 
 public interface IFundraisingService {
     FundraisingResponseDTO getFundraisingById(String fundraisingId);
-    FundraisingListResponseDTO getAllFundraisings();
     FundraisingListResponseDTO getFundraisingsByArtistId(String artistId);
+    FundraisingListResponseDTO getOthersFundraisings(String artistId);
     FundraisingListResponseDTO getFundraisingsByVenueId(String venueId);
     FundraisingListResponseDTO getFundraisingsByStatus(FundraisingStatus status);
     FundraisingListResponseDTO getFundraisingsByArtistIdAndStatus(String artistId, FundraisingStatus status);

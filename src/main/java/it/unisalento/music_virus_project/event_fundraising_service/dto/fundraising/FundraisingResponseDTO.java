@@ -27,9 +27,7 @@ public class FundraisingResponseDTO {
         this.eventDate = eventDate;
         this.expirationDate = expirationDate;
     }
-    public FundraisingResponseDTO() {
-
-    }
+    public FundraisingResponseDTO() {}
 
     public String getFundraisingId() {
         return fundraisingId;

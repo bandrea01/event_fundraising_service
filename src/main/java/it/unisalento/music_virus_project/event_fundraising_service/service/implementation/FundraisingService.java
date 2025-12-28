@@ -41,14 +41,14 @@ public class FundraisingService implements IFundraisingService {
     }
 
     @Override
-    public FundraisingListResponseDTO getAllFundraisings() {
-        List<Fundraising> fundraisings = fundraisingRepository.findAll();
+    public FundraisingListResponseDTO getFundraisingsByArtistId(String artistId) {
+        List<Fundraising> fundraisings = fundraisingRepository.findByArtistId(artistId);
         return mapToDTOList(fundraisings);
     }
 
     @Override
-    public FundraisingListResponseDTO getFundraisingsByArtistId(String artistId) {
-        List<Fundraising> fundraisings = fundraisingRepository.findByArtistId(artistId);
+    public FundraisingListResponseDTO getOthersFundraisings(String artistId) {
+        List<Fundraising> fundraisings = fundraisingRepository.findByArtistIdNot(artistId);
         return mapToDTOList(fundraisings);
     }
 

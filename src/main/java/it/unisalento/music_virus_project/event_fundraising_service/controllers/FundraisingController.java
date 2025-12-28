@@ -31,15 +31,27 @@ public class FundraisingController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-//    @GetMapping()
-//    public ResponseEntity<FundraisingListResponseDTO> getAllFundraisings() {
-//        var response = IFundraisingService.getAllFundraisings();
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
+    @GetMapping()
+    public ResponseEntity<FundraisingListResponseDTO> getOthersFundraisings(
+            @AuthenticationPrincipal Jwt principal
+    ) {
+        String artistId = principal.getClaimAsString("userId");
+        var response = IFundraisingService.getOthersFundraisings(artistId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     @GetMapping(params = "artistId")
     public ResponseEntity<FundraisingListResponseDTO> getFundraisingsByArtistId(@RequestParam String artistId) {
         var response = IFundraisingService.getFundraisingsByArtistId(artistId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ROLE_ARTIST')")
+    @GetMapping("/me")
+    public ResponseEntity<FundraisingListResponseDTO> getPersonalFundraising(
+            @AuthenticationPrincipal Jwt principal) {
+        String artistId = principal.getClaimAsString("userId");
+        FundraisingListResponseDTO response = IFundraisingService.getFundraisingsByArtistId(artistId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

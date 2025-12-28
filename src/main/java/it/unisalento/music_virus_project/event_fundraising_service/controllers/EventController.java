@@ -1,5 +1,6 @@
 package it.unisalento.music_virus_project.event_fundraising_service.controllers;
 
+import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventVenueCounterListResponseDTO;
 import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventListResponseDTO;
 import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventResponseDTO;
 import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventUpdateRequestDTO;
@@ -67,6 +68,12 @@ public class EventController {
     @GetMapping(params = {"startDate", "endDate"})
     public ResponseEntity<EventListResponseDTO> getEventsByDateRange(@RequestParam Instant startDate, @RequestParam Instant endDate) {
         var response = IEventService.getEventsByDateRange(startDate, endDate);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/venues/count")
+    public ResponseEntity<EventVenueCounterListResponseDTO> getEventCountersByVenue() {
+        var response = IEventService.getEventVenueCounter();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

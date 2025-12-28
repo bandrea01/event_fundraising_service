@@ -36,6 +36,9 @@ public class Event {
         this.createdAt = Instant.now();
     }
 
+    public Event() {
+    }
+
     public String getEventId() {
         return eventId;
     }

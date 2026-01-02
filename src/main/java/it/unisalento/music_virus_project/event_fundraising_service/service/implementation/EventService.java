@@ -152,40 +152,6 @@ public class EventService implements IEventService {
         return mapToDTO(event);
     }
 
-
-    //Rabbit
-    @Override
-    @Transactional
-    public EventListResponseDTO disableEventsByUserId(String userId, Role role) {
-        return switch (role) {
-            case ARTIST -> disableArtistEvents(userId);
-            case VENUE -> disableVenueEvents(userId);
-            default -> new EventListResponseDTO();
-        };
-    }
-
-
-    //utils
-    private EventResponseDTO mapToDTO(Event event) {
-        return new EventResponseDTO(
-                event.getEventId(),
-                event.getFundraisingId(),
-                event.getArtistId(),
-                event.getVenueId(),
-                event.getStatus(),
-                event.getEventName(),
-                event.getEventDate()
-        );
-    }
-
-    private EventListResponseDTO mapToListDTO(List<Event> events) {
-        EventListResponseDTO list = new EventListResponseDTO();
-        for (Event event : events) {
-            list.getEvents().add(mapToDTO(event));
-        }
-        return list;
-    }
-
     @Override
     @Transactional
     public EventListResponseDTO disableArtistEvents(String artistId) {
@@ -210,5 +176,36 @@ public class EventService implements IEventService {
             responseDTO.addEvent(mapToDTO(event));
         }
         return responseDTO;
+    }
+
+    //Rabbit
+    @Override
+    @Transactional
+    public EventListResponseDTO disableEventsByUserId(String userId, Role role) {
+        return switch (role) {
+            case ARTIST -> disableArtistEvents(userId);
+            case VENUE -> disableVenueEvents(userId);
+            default -> new EventListResponseDTO();
+        };
+    }
+
+    //utils
+    private EventResponseDTO mapToDTO(Event event) {
+        return new EventResponseDTO(
+                event.getEventId(),
+                event.getFundraisingId(),
+                event.getArtistId(),
+                event.getVenueId(),
+                event.getStatus(),
+                event.getEventName(),
+                event.getEventDate()
+        );
+    }
+    private EventListResponseDTO mapToListDTO(List<Event> events) {
+        EventListResponseDTO list = new EventListResponseDTO();
+        for (Event event : events) {
+            list.getEvents().add(mapToDTO(event));
+        }
+        return list;
     }
 }

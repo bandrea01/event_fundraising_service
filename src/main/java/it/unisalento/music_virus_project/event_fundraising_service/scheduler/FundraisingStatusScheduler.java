@@ -25,15 +25,13 @@ public class FundraisingStatusScheduler {
 
     @Scheduled(fixedDelay = 10 * 60 * 1000)
     public void scheduleNotAchievedFundraising() {
-        Instant now = Instant.now();
-        Instant threshold = now.plus(24, ChronoUnit.HOURS);
-
-        List<Fundraising> fundraisings =
-                fundraisingRepository.findByStatusAndEventDateBetween(FundraisingStatus.ACTIVE, now, threshold);
+        List<Fundraising> fundraisings = fundraisingRepository.findByStatus(FundraisingStatus.ACTIVE);
 
         for (Fundraising fundraising : fundraisings) {
-            fundraising.setStatus(FundraisingStatus.NOT_ACHIEVED);
-            fundraisingRepository.save(fundraising);
+            if (fundraising.getExpirationDate().isAfter(Instant.now())) {
+                fundraising.setStatus(FundraisingStatus.NOT_ACHIEVED);
+                fundraisingRepository.save(fundraising);
+            }
         }
     }
 

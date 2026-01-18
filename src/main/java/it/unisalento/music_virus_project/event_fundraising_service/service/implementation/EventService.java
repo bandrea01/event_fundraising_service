@@ -1,12 +1,14 @@
 package it.unisalento.music_virus_project.event_fundraising_service.service.implementation;
 
 import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Event;
+import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Feedback;
 import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Fundraising;
 import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Role;
 import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.EventStatus;
 import it.unisalento.music_virus_project.event_fundraising_service.dto.event.*;
 import it.unisalento.music_virus_project.event_fundraising_service.exceptions.NotFoundException;
 import it.unisalento.music_virus_project.event_fundraising_service.repositories.EventRepository;
+import it.unisalento.music_virus_project.event_fundraising_service.repositories.FeedbackRepository;
 import it.unisalento.music_virus_project.event_fundraising_service.service.IEventService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +22,10 @@ import java.util.Map;
 public class EventService implements IEventService {
 
     private final EventRepository eventRepository;
+    private final FeedbackRepository feedbackRepository;
 
-    public EventService(EventRepository eventRepository) {
+    public EventService(EventRepository eventRepository, FeedbackRepository feedbackRepository) {
+        this.feedbackRepository = feedbackRepository;
         this.eventRepository = eventRepository;
     }
 
@@ -178,6 +182,37 @@ public class EventService implements IEventService {
         return responseDTO;
     }
 
+    @Override
+    public FeedbackListResponseDTO getEventFeedbacks(String eventId) {
+        List<Feedback> feedbacks = feedbackRepository.findByEventId(eventId);
+        FeedbackListResponseDTO responseDTO = new FeedbackListResponseDTO();
+        for (Feedback feedback : feedbacks) {
+            responseDTO.addFeedback(mapToDTO(feedback));
+        }
+        return responseDTO;
+    }
+
+    @Override
+    @Transactional
+    public FeedbackResponseDTO addEventFeedback(String eventId, FeedbackCreateRequestDTO feedbackRequest) {
+        Event event = eventRepository.findByEventId(eventId);
+        if(event == null) {
+            throw new NotFoundException("Errore: Evento non trovato!");
+        }
+        if(event.getStatus() != EventStatus.FINISHED) {
+            throw new IllegalStateException("Errore: Non è possibile aggiungere feedback ad un evento non confermato!");
+        }
+        Feedback feedback = new Feedback();
+        feedback.setEventId(eventId);
+        feedback.setUserId(feedbackRequest.getUserId());
+        feedback.setRating(feedbackRequest.getRating());
+        feedback.setComment(feedbackRequest.getComment());
+        feedback.setCreatedAt(Instant.now());
+        feedback.validate();
+        feedback = feedbackRepository.save(feedback);
+        return mapToDTO(feedback);
+    }
+
     //Rabbit
     @Override
     @Transactional
@@ -200,6 +235,9 @@ public class EventService implements IEventService {
                 event.getEventName(),
                 event.getEventDate()
         );
+    }
+    private FeedbackResponseDTO mapToDTO(Feedback feedback) {
+        return new FeedbackResponseDTO(feedback);
     }
     private EventListResponseDTO mapToListDTO(List<Event> events) {
         EventListResponseDTO list = new EventListResponseDTO();

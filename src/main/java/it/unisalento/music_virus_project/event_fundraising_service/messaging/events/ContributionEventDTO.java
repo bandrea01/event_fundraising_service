@@ -2,7 +2,7 @@ package it.unisalento.music_virus_project.event_fundraising_service.messaging.ev
 
 import java.math.BigDecimal;
 
-public class ContributionAddedEventDTO {
+public class ContributionEventDTO {
     private String fundraisingId;
     private BigDecimal amount;
 

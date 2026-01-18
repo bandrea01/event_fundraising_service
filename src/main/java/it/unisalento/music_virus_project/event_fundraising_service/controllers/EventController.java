@@ -1,9 +1,6 @@
 package it.unisalento.music_virus_project.event_fundraising_service.controllers;
 
-import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventVenueCounterListResponseDTO;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventListResponseDTO;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventResponseDTO;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventUpdateRequestDTO;
+import it.unisalento.music_virus_project.event_fundraising_service.dto.event.*;
 import it.unisalento.music_virus_project.event_fundraising_service.service.IEventService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,6 +72,18 @@ public class EventController {
     public ResponseEntity<EventVenueCounterListResponseDTO> getEventCountersByVenue() {
         var response = IEventService.getEventVenueCounter();
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/{eventId}/feedbacks")
+    public ResponseEntity<FeedbackListResponseDTO> getEventFeedbacks(@PathVariable String eventId) {
+        var response = IEventService.getEventFeedbacks(eventId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/{eventId}/feedbacks")
+    public ResponseEntity<FeedbackResponseDTO> addEventFeedback(@PathVariable String eventId, @RequestBody FeedbackCreateRequestDTO feedbackRequest) {
+        var response = IEventService.addEventFeedback(eventId, feedbackRequest);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PatchMapping("/{eventId}")

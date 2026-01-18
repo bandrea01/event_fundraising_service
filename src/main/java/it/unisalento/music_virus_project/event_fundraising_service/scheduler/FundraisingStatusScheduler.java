@@ -28,7 +28,7 @@ public class FundraisingStatusScheduler {
         List<Fundraising> fundraisings = fundraisingRepository.findByStatus(FundraisingStatus.ACTIVE);
 
         for (Fundraising fundraising : fundraisings) {
-            if (fundraising.getExpirationDate().isAfter(Instant.now())) {
+            if (fundraising.getExpirationDate().isBefore(Instant.now())) {
                 fundraising.setStatus(FundraisingStatus.NOT_ACHIEVED);
                 fundraisingRepository.save(fundraising);
             }

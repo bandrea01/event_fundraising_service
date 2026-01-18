@@ -2,10 +2,7 @@ package it.unisalento.music_virus_project.event_fundraising_service.service;
 
 import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Fundraising;
 import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Role;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventVenueCounterListResponseDTO;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventListResponseDTO;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventResponseDTO;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.event.EventUpdateRequestDTO;
+import it.unisalento.music_virus_project.event_fundraising_service.dto.event.*;
 
 import java.time.Instant;
 
@@ -26,4 +23,6 @@ public interface IEventService {
     EventListResponseDTO disableArtistEvents(String artistId);
     EventListResponseDTO disableVenueEvents(String venueId);
     EventListResponseDTO disableEventsByUserId(String userId, Role role);
+    FeedbackListResponseDTO getEventFeedbacks(String eventId);
+    FeedbackResponseDTO addEventFeedback(String eventId, FeedbackCreateRequestDTO feedbackRequest);
 }

@@ -24,4 +24,5 @@ public interface FundraisingRepository extends MongoRepository<Fundraising, Stri
             Instant startDate,
             Instant endDate
     );
+    Integer countFundraisingByStatusIn(List<FundraisingStatus> statuses);
 }

@@ -2,6 +2,7 @@ package it.unisalento.music_virus_project.event_fundraising_service.repositories
 
 import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Event;
 import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.EventStatus;
+import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.FundraisingStatus;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.time.Instant;
@@ -16,5 +17,6 @@ public interface EventRepository extends MongoRepository<Event, String> {
     List<Event> findByStatus(EventStatus status);
     List<Event> findByEventDate(Instant eventDate);
     List<Event> findByEventDateBetween(Instant startDate, Instant endDate);
+    Integer countEventsByStatusIn(List<EventStatus> statuses);
 
 }

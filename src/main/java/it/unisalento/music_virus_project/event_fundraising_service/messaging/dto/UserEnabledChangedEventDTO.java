@@ -1,10 +1,11 @@
-package it.unisalento.music_virus_project.event_fundraising_service.messaging.events;
+package it.unisalento.music_virus_project.event_fundraising_service.messaging.dto;
 
 import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Role;
 
-public class UserDisabledEventDTO {
+public class UserEnabledChangedEventDTO {
 
     private String userId;
+    private boolean enabled;
     private Role role;
 
     public String getUserId() {
@@ -13,9 +14,14 @@ public class UserDisabledEventDTO {
     public void setUserId(String userId) {
         this.userId = userId;
     }
-
+    public boolean isEnabled() {
+        return enabled;
+    }
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
     public Role getRole() {
-        return this.role;
+        return role;
     }
     public void setRole(Role role) {
         this.role = role;

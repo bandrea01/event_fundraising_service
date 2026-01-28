@@ -126,11 +126,11 @@ public class FundraisingService implements IFundraisingService {
             fundraising.setVenueId(request.getVenueId());
         }
         if (request.getTargetAmount() != null) {
-            if(request.getTargetAmount().compareTo(fundraising.getCurrentAmount()) < 0) {
+            if (request.getTargetAmount().compareTo(fundraising.getCurrentAmount()) < 0) {
                 throw new IllegalArgumentException("Errore: L'importo target non può essere inferiore all'importo attuale!");
             }
-            if(fundraising.getStatus() == FundraisingStatus.ACHIEVED &&
-               request.getTargetAmount().compareTo(fundraising.getCurrentAmount()) > 0) {
+            if (fundraising.getStatus() == FundraisingStatus.ACHIEVED &&
+                    request.getTargetAmount().compareTo(fundraising.getCurrentAmount()) > 0) {
                 fundraising.setStatus(FundraisingStatus.ACTIVE);
             }
             fundraising.setTargetAmount(request.getTargetAmount());
@@ -147,7 +147,7 @@ public class FundraisingService implements IFundraisingService {
 
     @Override
     @Transactional
-    public FundraisingResponseDTO cancelFundraisingById(String artistId, String fundraisingId) {
+    public FundraisingResponseDTO disableFundraisingById(String artistId, String fundraisingId) {
         Fundraising fundraising = fundraisingRepository.findById(fundraisingId)
                 .orElseThrow(() -> new NotFoundException("Errore: Fundraising non trovato!"));
 
@@ -157,20 +157,17 @@ public class FundraisingService implements IFundraisingService {
         }
 
         fundraising.setStatus(FundraisingStatus.CANCELLED);
-
         fundraising = fundraisingRepository.save(fundraising);
 
         return mapToDTO(fundraising);
     }
 
-    //Rabbit
     @Override
     @Transactional
     public FundraisingListResponseDTO disableFundraisingsByUserId(String userId, Role role) {
         return switch (role) {
             case ARTIST -> disableArtistFundraisings(userId);
-            //case VENUE_OWNER:
-            //TODO implement venue owner disable fundraisings
+            case VENUE -> disableVenuesFundraisings(userId);
             default -> new FundraisingListResponseDTO();
         };
     }
@@ -228,6 +225,7 @@ public class FundraisingService implements IFundraisingService {
                 fundraising.getExpirationDate()
         );
     }
+
     private FundraisingListResponseDTO mapToDTOList(List<Fundraising> fundraisings) {
         FundraisingListResponseDTO responseDTO = new FundraisingListResponseDTO();
         for (Fundraising f : fundraisings) {
@@ -235,18 +233,31 @@ public class FundraisingService implements IFundraisingService {
         }
         return responseDTO;
     }
+
     private FundraisingListResponseDTO disableArtistFundraisings(String artistId) {
-        FundraisingListResponseDTO responseDTO = new FundraisingListResponseDTO();
         List<Fundraising> fundraisings = fundraisingRepository.findByArtistId(artistId);
-        for (Fundraising f : fundraisings) {
-            try {
-                if (f.getStatus() != FundraisingStatus.CANCELLED && f.getStatus() != FundraisingStatus.NOT_ACHIEVED) {
-                    f.setStatus(FundraisingStatus.CANCELLED);
-                    f = fundraisingRepository.save(f);
-                    responseDTO.addFundraising(mapToDTO(f));
-                }
-            } catch (Exception e) {
-                return responseDTO;
+        FundraisingListResponseDTO responseDTO = new FundraisingListResponseDTO();
+        for (Fundraising fundraising : fundraisings) {
+            fundraising.setStatus(FundraisingStatus.CANCELLED);
+            fundraising = fundraisingRepository.save(fundraising);
+            if(fundraising.getStatus() == FundraisingStatus.CANCELLED) {
+                responseDTO.addFundraising(mapToDTO(fundraising));
+            } else {
+                throw new RuntimeException("Errore: Impossibile cancellare la raccolta fondi con id " + fundraising.getFundraisingId());
+            }
+        }
+        return responseDTO;
+    }
+    private FundraisingListResponseDTO disableVenuesFundraisings(String venueId) {
+        List<Fundraising> fundraisings = fundraisingRepository.findByVenueId(venueId);
+        FundraisingListResponseDTO responseDTO = new FundraisingListResponseDTO();
+        for (Fundraising fundraising : fundraisings) {
+            fundraising.setStatus(FundraisingStatus.CANCELLED);
+            fundraising = fundraisingRepository.save(fundraising);
+            if(fundraising.getStatus() == FundraisingStatus.CANCELLED) {
+                responseDTO.addFundraising(mapToDTO(fundraising));
+            } else {
+                throw new RuntimeException("Errore: Impossibile cancellare la raccolta fondi con id " + fundraising.getFundraisingId());
             }
         }
         return responseDTO;

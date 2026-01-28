@@ -1,6 +1,6 @@
-package it.unisalento.music_virus_project.event_fundraising_service.messaging.listener;
+package it.unisalento.music_virus_project.event_fundraising_service.messaging;
 
-import it.unisalento.music_virus_project.event_fundraising_service.messaging.events.ContributionEventDTO;
+import it.unisalento.music_virus_project.event_fundraising_service.messaging.dto.ContributionEventDTO;
 import it.unisalento.music_virus_project.event_fundraising_service.service.IFundraisingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

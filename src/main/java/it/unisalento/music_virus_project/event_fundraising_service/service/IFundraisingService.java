@@ -21,7 +21,7 @@ public interface IFundraisingService {
     FundraisingListResponseDTO getFundraisingsByEventDate(Instant eventDate);
     FundraisingResponseDTO createFundraising(FundraisingCreateRequestDTO request);
     FundraisingResponseDTO updateFundraising(String fundraisingId, FundraisingUpdateRequestDTO request);
-    FundraisingResponseDTO cancelFundraisingById(String artistId, String fundraisingId);
+    FundraisingResponseDTO disableFundraisingById(String artistId, String fundraisingId);
     FundraisingListResponseDTO disableFundraisingsByUserId(String userId, Role role);
     FundraisingResponseDTO addContributionToFundraising(String fundraisingId, BigDecimal amount);
     FundraisingResponseDTO confirmFundraisingById(String artistId, String fundraisingId);

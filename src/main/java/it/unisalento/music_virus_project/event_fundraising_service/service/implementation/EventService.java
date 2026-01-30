@@ -7,6 +7,7 @@ import it.unisalento.music_virus_project.event_fundraising_service.domain.entity
 import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.EventStatus;
 import it.unisalento.music_virus_project.event_fundraising_service.dto.event.*;
 import it.unisalento.music_virus_project.event_fundraising_service.exceptions.NotFoundException;
+import it.unisalento.music_virus_project.event_fundraising_service.messaging.RabbitEventFundraisingService;
 import it.unisalento.music_virus_project.event_fundraising_service.repositories.EventRepository;
 import it.unisalento.music_virus_project.event_fundraising_service.repositories.FeedbackRepository;
 import it.unisalento.music_virus_project.event_fundraising_service.service.IEventService;
@@ -24,9 +25,12 @@ public class EventService implements IEventService {
     private final EventRepository eventRepository;
     private final FeedbackRepository feedbackRepository;
 
-    public EventService(EventRepository eventRepository, FeedbackRepository feedbackRepository) {
+    private final RabbitEventFundraisingService rabbitEventFundraisingService;
+
+    public EventService(EventRepository eventRepository, FeedbackRepository feedbackRepository, RabbitEventFundraisingService rabbitEventFundraisingService) {
         this.feedbackRepository = feedbackRepository;
         this.eventRepository = eventRepository;
+        this.rabbitEventFundraisingService = rabbitEventFundraisingService;
     }
 
     @Override
@@ -112,6 +116,10 @@ public class EventService implements IEventService {
     public EventResponseDTO createEventFromFundraising(Fundraising fundraising) {
         Event event = new Event(fundraising);
         event = eventRepository.save(event);
+
+        // rabbit for taxation
+        rabbitEventFundraisingService.sendEventCreation(event.getArtistId(), fundraising.getTargetAmount());
+
         return mapToDTO(event);
     }
 

@@ -1,4 +1,4 @@
-package it.unisalento.music_virus_project.event_fundraising_service.messaging;
+package it.unisalento.music_virus_project.event_fundraising_service.messaging.listener;
 
 import it.unisalento.music_virus_project.event_fundraising_service.messaging.dto.UserApprovalChangedEventDTO;
 import it.unisalento.music_virus_project.event_fundraising_service.messaging.dto.UserEnabledChangedEventDTO;

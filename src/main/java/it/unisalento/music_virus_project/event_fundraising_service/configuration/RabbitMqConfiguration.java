@@ -1,6 +1,6 @@
 package it.unisalento.music_virus_project.event_fundraising_service.configuration;
 
-import it.unisalento.music_virus_project.event_fundraising_service.messaging.ContributionEventRoutingKeys;
+import it.unisalento.music_virus_project.event_fundraising_service.messaging.keys.EventFundraisingsRoutingKeys;
 import it.unisalento.music_virus_project.event_fundraising_service.messaging.keys.UserEventRoutingKeys;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
@@ -19,6 +19,8 @@ public class RabbitMqConfiguration {
     private String userEventsExchangeName;
     @Value("${app.rabbitmq.contribution-events-exchange}")
     private String contributionEventsExchangeName;
+    @Value("${app.rabbitmq.event-fundraising-exchange}")
+    private String eventFundraisingExchangeName;
 
     //queues
     @Value("${app.rabbitmq.user-approval-queue}")
@@ -32,6 +34,10 @@ public class RabbitMqConfiguration {
     @Bean
     public TopicExchange userEventsExchange() {
         return new TopicExchange(userEventsExchangeName, true, false);
+    }
+    @Bean
+    public TopicExchange eventFundraisingExchange() {
+        return new TopicExchange(eventFundraisingExchangeName, true, false);
     }
     @Bean
     public TopicExchange contributionEventsExchange() {return new TopicExchange(contributionEventsExchangeName, true, false);}
@@ -65,7 +71,7 @@ public class RabbitMqConfiguration {
     public Binding contributionAddedBinding(Queue contributionEventsQueue, TopicExchange contributionEventsExchange) {
         return BindingBuilder.bind(contributionEventsQueue)
                 .to(contributionEventsExchange)
-                .with(ContributionEventRoutingKeys.CONTRIBUTION_ADDED);
+                .with(EventFundraisingsRoutingKeys.CONTRIBUTION_ADDED);
     }
 
     @Bean

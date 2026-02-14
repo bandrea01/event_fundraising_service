@@ -23,7 +23,7 @@ import java.time.Instant;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -233,7 +233,8 @@ class EventServiceTest {
         assertNotNull(dto);
 
         verify(eventRepository).save(any(Event.class));
-        verify(rabbitEventFundraisingService).sendEventCreation("A99", new BigDecimal("150.00"));
+        verify(rabbitEventFundraisingService)
+                .sendEventCreation("A99", "organizer-1", new BigDecimal("150.00"));
     }
 
     // ---------------------------

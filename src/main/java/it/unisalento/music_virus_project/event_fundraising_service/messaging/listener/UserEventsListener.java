@@ -4,11 +4,10 @@ import it.unisalento.music_virus_project.event_fundraising_service.messaging.dto
 import it.unisalento.music_virus_project.event_fundraising_service.messaging.dto.UserEnabledChangedEventDTO;
 import it.unisalento.music_virus_project.event_fundraising_service.service.implementation.EventService;
 import it.unisalento.music_virus_project.event_fundraising_service.service.implementation.FundraisingService;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.stereotype.Component;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
 
 @Component
 public class UserEventsListener {

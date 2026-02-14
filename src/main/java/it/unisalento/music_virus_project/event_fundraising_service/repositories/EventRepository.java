@@ -2,7 +2,6 @@ package it.unisalento.music_virus_project.event_fundraising_service.repositories
 
 import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Event;
 import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.EventStatus;
-import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.FundraisingStatus;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.time.Instant;

@@ -23,15 +23,15 @@ public class EventFundraisingPublisher {
     }
 
     public void publishEventCreation(EventCreationDTO event) {
-        log.info("Publishing EventCreation for artistId={}" + event.getArtistId());
+        log.info("Publishing EventCreation for artistId= " + event.getArtistId());
         rabbitTemplate.convertAndSend(eventFundraisingExchange.getName(),
-                EventFundraisingsRoutingKeys.CONTRIBUTION_ADDED,
+                EventFundraisingsRoutingKeys.EVENT_CREATED,
                 event);
         log.info("Published ContributionAddedEvent");
     }
 
     public void publishFundraisingRefunded(FundraisingRefundDTO event) {
-        log.info("Publishing FundraisingRefunded for fundraisingId=" + event.getFundraisingId());
+        log.info("Publishing FundraisingRefunded for fundraisingId= " + event.getFundraisingId());
         rabbitTemplate.convertAndSend(eventFundraisingExchange.getName(),
                 EventFundraisingsRoutingKeys.FUNDRAISING_REFUNDED,
                 event.getFundraisingId());

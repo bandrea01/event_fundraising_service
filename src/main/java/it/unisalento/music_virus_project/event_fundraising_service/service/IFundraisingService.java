@@ -2,10 +2,7 @@ package it.unisalento.music_virus_project.event_fundraising_service.service;
 
 import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Role;
 import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.FundraisingStatus;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.fundraising.FundraisingCreateRequestDTO;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.fundraising.FundraisingListResponseDTO;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.fundraising.FundraisingResponseDTO;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.fundraising.FundraisingUpdateRequestDTO;
+import it.unisalento.music_virus_project.event_fundraising_service.dto.fundraising.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -25,4 +22,5 @@ public interface IFundraisingService {
     FundraisingListResponseDTO disableFundraisingsByUserId(String userId, Role role);
     FundraisingResponseDTO addContributionToFundraising(String fundraisingId, BigDecimal amount);
     FundraisingResponseDTO confirmFundraisingById(String artistId, String fundraisingId);
+    FundraisingResponseDTO addVenuePromotionToFundraising(String fundraisingId, VenuePromotionRequestDTO request);
 }

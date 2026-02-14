@@ -15,14 +15,15 @@ public class RabbitEventFundraisingService {
         this.publisher = publisher;
     }
 
-    public void sendEventCreation(String artistId, BigDecimal amount) {
+    public void sendEventCreation(String eventId, String artistId, BigDecimal amount) {
         EventCreationDTO event = new EventCreationDTO();
+        event.setEventId(eventId);
         event.setArtistId(artistId);
         event.setAmount(amount);
         publisher.publishEventCreation(event);
     }
 
-    public void sendFundraisingRefunded(String fundraisingId, String artistId) {
+    public void sendFundraisingRefundRequest(String fundraisingId, String artistId) {
         FundraisingRefundDTO event = new FundraisingRefundDTO();
         event.setFundraisingId(fundraisingId);
         event.setArtistId(artistId);

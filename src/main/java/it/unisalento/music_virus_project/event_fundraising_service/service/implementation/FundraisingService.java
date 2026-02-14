@@ -3,14 +3,12 @@ package it.unisalento.music_virus_project.event_fundraising_service.service.impl
 import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Fundraising;
 import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Role;
 import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.FundraisingStatus;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.fundraising.FundraisingCreateRequestDTO;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.fundraising.FundraisingListResponseDTO;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.fundraising.FundraisingResponseDTO;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.fundraising.FundraisingUpdateRequestDTO;
+import it.unisalento.music_virus_project.event_fundraising_service.dto.fundraising.*;
 import it.unisalento.music_virus_project.event_fundraising_service.exceptions.ForbiddenActionException;
 import it.unisalento.music_virus_project.event_fundraising_service.exceptions.NotFoundException;
 import it.unisalento.music_virus_project.event_fundraising_service.exceptions.SameNameFundraisingException;
 import it.unisalento.music_virus_project.event_fundraising_service.exceptions.SamePlaceAndDateFundraisingException;
+import it.unisalento.music_virus_project.event_fundraising_service.messaging.RabbitEventFundraisingService;
 import it.unisalento.music_virus_project.event_fundraising_service.repositories.FundraisingRepository;
 import it.unisalento.music_virus_project.event_fundraising_service.service.IFundraisingService;
 import org.springframework.stereotype.Service;
@@ -26,9 +24,12 @@ public class FundraisingService implements IFundraisingService {
     private final FundraisingRepository fundraisingRepository;
     private final EventService eventService;
 
-    public FundraisingService(FundraisingRepository fundraisingRepository, EventService eventService) {
+    private final RabbitEventFundraisingService rabbitEventFundraisingService;
+
+    public FundraisingService(FundraisingRepository fundraisingRepository, EventService eventService, RabbitEventFundraisingService rabbitEventFundraisingService) {
         this.fundraisingRepository = fundraisingRepository;
         this.eventService = eventService;
+        this.rabbitEventFundraisingService = rabbitEventFundraisingService;
     }
 
     @Override
@@ -94,9 +95,11 @@ public class FundraisingService implements IFundraisingService {
         }
 
         //If a fundraising with the same name exist then throw error
-        Fundraising fundraisingByName = fundraisingRepository.findByFundraisingName(request.getFundraisingName());
+        Fundraising fundraisingByName = fundraisingRepository.findByFundraisingNameAndVenueId(request.getFundraisingName(), request.getVenueId());
         if (fundraisingByName != null) {
-            throw new SameNameFundraisingException("Errore: Esiste già una raccolta fondi con lo stesso nome!");
+            if (fundraisingByName.getStatus() != FundraisingStatus.CANCELLED) {
+                throw new SameNameFundraisingException("Errore: Esiste già una raccolta fondi con lo stesso nome nello stesso luogo!");
+            }
         }
 
         Fundraising fundraising = new Fundraising(
@@ -159,6 +162,9 @@ public class FundraisingService implements IFundraisingService {
         fundraising.setStatus(FundraisingStatus.CANCELLED);
         fundraising = fundraisingRepository.save(fundraising);
 
+        //rabbit
+        rabbitEventFundraisingService.sendFundraisingRefundRequest(fundraisingId, artistId);
+
         return mapToDTO(fundraising);
     }
 
@@ -211,6 +217,19 @@ public class FundraisingService implements IFundraisingService {
         return mapToDTO(fundraising);
     }
 
+    @Override
+    @Transactional
+    public FundraisingResponseDTO addVenuePromotionToFundraising(String fundraisingId, VenuePromotionRequestDTO request) {
+        Fundraising fundraising = fundraisingRepository.findById(fundraisingId)
+                .orElseThrow(() -> new NotFoundException("Errore: Fundraising non trovato!"));
+
+        System.out.println("Promozione richiesta: " + request.getPromotion());
+        fundraising.setVenuePromotion(request.getPromotion());
+        fundraising = fundraisingRepository.save(fundraising);
+        System.out.println("Promozione salvata: " + fundraising.getVenuePromotion());
+        return mapToDTO(fundraising);
+    }
+
     //Utils
     private FundraisingResponseDTO mapToDTO(Fundraising fundraising) {
         return new FundraisingResponseDTO(
@@ -221,6 +240,7 @@ public class FundraisingService implements IFundraisingService {
                 fundraising.getCurrentAmount(),
                 fundraising.getTargetAmount(),
                 fundraising.getStatus(),
+                fundraising.getVenuePromotion(),
                 fundraising.getEventDate(),
                 fundraising.getExpirationDate()
         );
@@ -240,22 +260,27 @@ public class FundraisingService implements IFundraisingService {
         for (Fundraising fundraising : fundraisings) {
             fundraising.setStatus(FundraisingStatus.CANCELLED);
             fundraising = fundraisingRepository.save(fundraising);
-            if(fundraising.getStatus() == FundraisingStatus.CANCELLED) {
+            if (fundraising.getStatus() == FundraisingStatus.CANCELLED) {
                 responseDTO.addFundraising(mapToDTO(fundraising));
+                //rabbit
+                rabbitEventFundraisingService.sendFundraisingRefundRequest(fundraising.getFundraisingId(), artistId);
             } else {
                 throw new RuntimeException("Errore: Impossibile cancellare la raccolta fondi con id " + fundraising.getFundraisingId());
             }
         }
         return responseDTO;
     }
+
     private FundraisingListResponseDTO disableVenuesFundraisings(String venueId) {
         List<Fundraising> fundraisings = fundraisingRepository.findByVenueId(venueId);
         FundraisingListResponseDTO responseDTO = new FundraisingListResponseDTO();
         for (Fundraising fundraising : fundraisings) {
             fundraising.setStatus(FundraisingStatus.CANCELLED);
             fundraising = fundraisingRepository.save(fundraising);
-            if(fundraising.getStatus() == FundraisingStatus.CANCELLED) {
+            if (fundraising.getStatus() == FundraisingStatus.CANCELLED) {
                 responseDTO.addFundraising(mapToDTO(fundraising));
+                //rabbit
+                rabbitEventFundraisingService.sendFundraisingRefundRequest(fundraising.getFundraisingId(), fundraising.getArtistId());
             } else {
                 throw new RuntimeException("Errore: Impossibile cancellare la raccolta fondi con id " + fundraising.getFundraisingId());
             }

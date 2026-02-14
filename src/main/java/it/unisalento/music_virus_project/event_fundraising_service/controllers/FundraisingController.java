@@ -1,10 +1,8 @@
 package it.unisalento.music_virus_project.event_fundraising_service.controllers;
 
+import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Role;
 import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.FundraisingStatus;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.fundraising.FundraisingCreateRequestDTO;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.fundraising.FundraisingListResponseDTO;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.fundraising.FundraisingResponseDTO;
-import it.unisalento.music_virus_project.event_fundraising_service.dto.fundraising.FundraisingUpdateRequestDTO;
+import it.unisalento.music_virus_project.event_fundraising_service.dto.fundraising.*;
 import it.unisalento.music_virus_project.event_fundraising_service.service.IFundraisingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,9 +48,17 @@ public class FundraisingController {
     @GetMapping("/me")
     public ResponseEntity<FundraisingListResponseDTO> getPersonalFundraising(
             @AuthenticationPrincipal Jwt principal) {
-        String artistId = principal.getClaimAsString("userId");
-        FundraisingListResponseDTO response = IFundraisingService.getFundraisingsByArtistId(artistId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        String userId = principal.getClaimAsString("userId");
+        Role role = Role.valueOf(principal.getClaimAsString("role").substring(5));
+        if (role == Role.ARTIST) {
+            FundraisingListResponseDTO response = IFundraisingService.getFundraisingsByArtistId(userId);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else if (role == Role.VENUE) {
+            FundraisingListResponseDTO response = IFundraisingService.getFundraisingsByVenueId(userId);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new FundraisingListResponseDTO(), HttpStatus.OK);
+        }
     }
 
     @GetMapping(params = "venueId")
@@ -133,6 +139,17 @@ public class FundraisingController {
             @PathVariable String fundraisingId) {
         String artistId = principal.getClaimAsString("userId");
         FundraisingResponseDTO response = IFundraisingService.confirmFundraisingById(artistId, fundraisingId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ROLE_VENUE')")
+    @PatchMapping("/{fundraisingId}/promotion")
+    public ResponseEntity<FundraisingResponseDTO> addVenuePromotion(
+            @PathVariable String fundraisingId,
+            @RequestBody VenuePromotionRequestDTO request
+    )
+    {
+        FundraisingResponseDTO response = IFundraisingService.addVenuePromotionToFundraising(fundraisingId, request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

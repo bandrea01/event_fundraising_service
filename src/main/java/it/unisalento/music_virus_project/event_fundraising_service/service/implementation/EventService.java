@@ -117,8 +117,8 @@ public class EventService implements IEventService {
         Event event = new Event(fundraising);
         event = eventRepository.save(event);
 
-        // rabbit for taxation
-        rabbitEventFundraisingService.sendEventCreation(event.getArtistId(), fundraising.getTargetAmount());
+        // rabbit for taxation and artist payout
+        rabbitEventFundraisingService.sendEventCreation(event.getEventId(), event.getArtistId(), fundraising.getCurrentAmount());
 
         return mapToDTO(event);
     }

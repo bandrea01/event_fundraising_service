@@ -1,6 +1,7 @@
 package it.unisalento.music_virus_project.event_fundraising_service.dto.fundraising;
 
 import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.FundraisingStatus;
+import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.VenuePromotionEnum;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -13,10 +14,11 @@ public class FundraisingResponseDTO {
     private BigDecimal currentAmount;
     private BigDecimal targetAmount;
     private FundraisingStatus status;
+    private VenuePromotionEnum venuePromotion;
     private Instant eventDate;
     private Instant expirationDate;
-    
-    public FundraisingResponseDTO(String fundraisingId, String fundraisingName, String artistId, String venueId, BigDecimal currentAmount, BigDecimal targetAmount, FundraisingStatus status, Instant eventDate, Instant expirationDate) {
+
+    public FundraisingResponseDTO(String fundraisingId, String fundraisingName, String artistId, String venueId, BigDecimal currentAmount, BigDecimal targetAmount, FundraisingStatus status, VenuePromotionEnum venuePromotion, Instant eventDate, Instant expirationDate) {
         this.fundraisingId = fundraisingId;
         this.fundraisingName = fundraisingName;
         this.artistId = artistId;
@@ -24,10 +26,13 @@ public class FundraisingResponseDTO {
         this.currentAmount = currentAmount;
         this.targetAmount = targetAmount;
         this.status = status;
+        this.venuePromotion = venuePromotion;
         this.eventDate = eventDate;
         this.expirationDate = expirationDate;
     }
-    public FundraisingResponseDTO() {}
+
+    public FundraisingResponseDTO() {
+    }
 
     public String getFundraisingId() {
         return fundraisingId;
@@ -83,6 +88,14 @@ public class FundraisingResponseDTO {
 
     public void setStatus(FundraisingStatus status) {
         this.status = status;
+    }
+
+    public VenuePromotionEnum getVenuePromotion() {
+        return venuePromotion;
+    }
+
+    public void setVenuePromotion(VenuePromotionEnum venuePromotion) {
+        this.venuePromotion = venuePromotion;
     }
 
     public Instant getEventDate() {

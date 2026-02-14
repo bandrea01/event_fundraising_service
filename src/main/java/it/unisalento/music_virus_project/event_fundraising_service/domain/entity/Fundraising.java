@@ -1,6 +1,7 @@
 package it.unisalento.music_virus_project.event_fundraising_service.domain.entity;
 
 import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.FundraisingStatus;
+import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.VenuePromotionEnum;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
@@ -14,7 +15,7 @@ import java.time.Instant;
 @CompoundIndex(name = "event_minamount_idx", def = "{'eventId': 1, 'minAmount': 1}")
 public class Fundraising {
 
-        public static final long EXPIRATION_OFFSET_SECONDS = 86400;
+    public static final long EXPIRATION_OFFSET_SECONDS = 86400;
 
     @Id
     private String fundraisingId;
@@ -27,6 +28,7 @@ public class Fundraising {
     private String fundraisingName;
     private BigDecimal currentAmount;
     private BigDecimal targetAmount;
+    private VenuePromotionEnum venuePromotion;
     private FundraisingStatus status;
     private Instant eventDate;
     private Instant expirationDate;
@@ -41,6 +43,7 @@ public class Fundraising {
         this.currentAmount = BigDecimal.ZERO;
         this.targetAmount = targetAmount;
         this.status = status;
+        this.venuePromotion = VenuePromotionEnum.NONE;
         this.eventDate = eventDate;
         this.createdAt = Instant.now();
         this.expirationDate = eventDate.minusSeconds(EXPIRATION_OFFSET_SECONDS);
@@ -100,6 +103,14 @@ public class Fundraising {
 
     public void setStatus(FundraisingStatus status) {
         this.status = status;
+    }
+
+    public VenuePromotionEnum getVenuePromotion() {
+        return venuePromotion;
+    }
+
+    public void setVenuePromotion(VenuePromotionEnum venuePromotion) {
+        this.venuePromotion = venuePromotion;
     }
 
     public Instant getEventDate() {

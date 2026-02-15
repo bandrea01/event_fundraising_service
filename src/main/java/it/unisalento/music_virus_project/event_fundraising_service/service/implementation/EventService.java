@@ -241,8 +241,9 @@ public class EventService implements IEventService {
                 event.getVenueId(),
                 event.getStatus(),
                 event.getEventName(),
-                event.getEventDate()
-        );
+                event.getEventDate(),
+                event.getVenuePromotion()
+                );
     }
     private FeedbackResponseDTO mapToDTO(Feedback feedback) {
         return new FeedbackResponseDTO(feedback);

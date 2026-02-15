@@ -1,6 +1,7 @@
 package it.unisalento.music_virus_project.event_fundraising_service.domain.entity;
 
 import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.EventStatus;
+import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.VenuePromotionEnum;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -22,6 +23,7 @@ public class Event {
     private String eventName;
     private Instant eventDate;
     private EventStatus status;
+    private VenuePromotionEnum venuePromotion;
 
     @CreatedDate
     private Instant createdAt;
@@ -33,6 +35,7 @@ public class Event {
         this.artistId = fundraising.getArtistId();
         this.venueId = fundraising.getVenueId();
         this.status = EventStatus.PENDING;
+        this.venuePromotion = fundraising.getVenuePromotion();
         this.createdAt = Instant.now();
     }
 
@@ -93,6 +96,14 @@ public class Event {
 
     public void setStatus(EventStatus status) {
         this.status = status;
+    }
+
+    public VenuePromotionEnum getVenuePromotion() {
+        return venuePromotion;
+    }
+
+    public void setVenuePromotion(VenuePromotionEnum venuePromotion) {
+        this.venuePromotion = venuePromotion;
     }
 
     public Instant getCreatedAt() {

@@ -1,6 +1,7 @@
 package it.unisalento.music_virus_project.event_fundraising_service.dto.event;
 
 import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.EventStatus;
+import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.VenuePromotionEnum;
 
 import java.time.Instant;
 
@@ -11,15 +12,17 @@ public class EventResponseDTO {
     private String artistId;
     private String venueId;
     private EventStatus status;
+    private VenuePromotionEnum venuePromotion;
     private String eventName;
     private Instant eventDate;
 
-    public EventResponseDTO(String eventId, String fundraisingId, String artistId, String venueId, EventStatus status, String eventName, Instant eventDate) {
+    public EventResponseDTO(String eventId, String fundraisingId, String artistId, String venueId, EventStatus status, String eventName, Instant eventDate, VenuePromotionEnum venuePromotion) {
         this.eventId = eventId;
         this.fundraisingId = fundraisingId;
         this.artistId = artistId;
         this.venueId = venueId;
         this.status = status;
+        this.venuePromotion = venuePromotion;
         this.eventName = eventName;
         this.eventDate = eventDate;
     }
@@ -81,5 +84,13 @@ public class EventResponseDTO {
 
     public void setEventDate(Instant eventDate) {
         this.eventDate = eventDate;
+    }
+
+    public VenuePromotionEnum getVenuePromotion() {
+        return venuePromotion;
+    }
+
+    public void setVenuePromotion(VenuePromotionEnum venuePromotion) {
+        this.venuePromotion = venuePromotion;
     }
 }

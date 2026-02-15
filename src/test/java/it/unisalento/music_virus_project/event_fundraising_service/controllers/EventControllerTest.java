@@ -1,6 +1,7 @@
 package it.unisalento.music_virus_project.event_fundraising_service.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.VenuePromotionEnum;
 import it.unisalento.music_virus_project.event_fundraising_service.dto.event.*;
 import it.unisalento.music_virus_project.event_fundraising_service.service.IEventService;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(EventController.class)
-@AutoConfigureMockMvc(addFilters = false) // 🔥 DISABILITA SICUREZZA
+@AutoConfigureMockMvc(addFilters = false)
 class EventControllerTest {
 
     @Autowired
@@ -34,17 +35,13 @@ class EventControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    // -------------------------------------------------
-    // GET ALL
-    // -------------------------------------------------
-
     @Test
     void getAllEvents_returnsOk() throws Exception {
 
         EventListResponseDTO response = new EventListResponseDTO();
         response.getEvents().add(new EventResponseDTO(
                 "e1", "f1", "a1", "v1",
-                null, "EventName", Instant.now()
+                null, "EventName", Instant.now(), VenuePromotionEnum.DRINK_DISCOUNT_10_PERCENT
         ));
 
         when(eventService.getAllEvents()).thenReturn(response);
@@ -54,16 +51,12 @@ class EventControllerTest {
                 .andExpect(jsonPath("$.events[0].eventId").value("e1"));
     }
 
-    // -------------------------------------------------
-    // GET BY ID
-    // -------------------------------------------------
-
     @Test
     void getEventById_returnsOk() throws Exception {
 
         EventResponseDTO dto = new EventResponseDTO(
                 "e1", "f1", "a1", "v1",
-                null, "EventName", Instant.now()
+                null, "EventName", Instant.now(), VenuePromotionEnum.DRINK_DISCOUNT_10_PERCENT
         );
 
         when(eventService.getEventById("e1")).thenReturn(dto);
@@ -73,17 +66,13 @@ class EventControllerTest {
                 .andExpect(jsonPath("$.eventId").value("e1"));
     }
 
-    // -------------------------------------------------
-    // GET BY STATUS
-    // -------------------------------------------------
-
     @Test
     void getEventsByStatus_returnsOk() throws Exception {
 
         EventListResponseDTO response = new EventListResponseDTO();
         response.getEvents().add(new EventResponseDTO(
                 "e1", "f1", "a1", "v1",
-                null, "EventName", Instant.now()
+                null, "EventName", Instant.now(), VenuePromotionEnum.DRINK_DISCOUNT_10_PERCENT
         ));
 
         when(eventService.getEventsByStatus("CONFIRMED")).thenReturn(response);
@@ -93,10 +82,6 @@ class EventControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.events[0].eventId").value("e1"));
     }
-
-    // -------------------------------------------------
-    // GET BY DATE
-    // -------------------------------------------------
 
     @Test
     void getEventsByDate_returnsOk() throws Exception {
@@ -110,10 +95,6 @@ class EventControllerTest {
                         .param("eventDate", now.toString()))
                 .andExpect(status().isOk());
     }
-
-    // -------------------------------------------------
-    // GET VENUE COUNTER
-    // -------------------------------------------------
 
     @Test
     void getVenueCounter_returnsOk() throws Exception {
@@ -130,10 +111,6 @@ class EventControllerTest {
                 .andExpect(jsonPath("$.eventVenueCounters[0].venueId").value("v1"))
                 .andExpect(jsonPath("$.eventVenueCounters[0].eventCounter").value(3));
     }
-
-    // -------------------------------------------------
-    // ADD FEEDBACK
-    // -------------------------------------------------
 
     @Test
     void addEventFeedback_returnsCreated() throws Exception {
@@ -156,10 +133,6 @@ class EventControllerTest {
                 .andExpect(jsonPath("$.rating").value(5));
     }
 
-    // -------------------------------------------------
-    // UPDATE EVENT
-    // -------------------------------------------------
-
     @Test
     void updateEvent_returnsOk() throws Exception {
 
@@ -168,7 +141,7 @@ class EventControllerTest {
 
         EventResponseDTO response = new EventResponseDTO(
                 "e1", "f1", "a1", "v1",
-                null, "Updated", Instant.now()
+                null, "Updated", Instant.now(), VenuePromotionEnum.DRINK_DISCOUNT_10_PERCENT
         );
 
         when(eventService.updateEvent(eq("e1"), any()))
@@ -181,16 +154,12 @@ class EventControllerTest {
                 .andExpect(jsonPath("$.eventName").value("Updated"));
     }
 
-    // -------------------------------------------------
-    // CANCEL EVENT
-    // -------------------------------------------------
-
     @Test
     void cancelEvent_returnsOk() throws Exception {
 
         EventResponseDTO response = new EventResponseDTO(
                 "e1", "f1", "a1", "v1",
-                null, "EventName", Instant.now()
+                null, "EventName", Instant.now(), VenuePromotionEnum.DRINK_DISCOUNT_10_PERCENT
         );
 
         when(eventService.cancelEventById("e1")).thenReturn(response);

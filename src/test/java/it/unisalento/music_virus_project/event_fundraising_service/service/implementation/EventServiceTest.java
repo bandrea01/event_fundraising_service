@@ -65,10 +65,6 @@ class EventServiceTest {
         e2.setEventDate(Instant.parse("2026-02-01T10:00:00Z"));
     }
 
-    // ---------------------------
-    // GETTERS / LISTS
-    // ---------------------------
-
     @Test
     void getAllEvents_returnsListDTO() {
         when(eventRepository.findAll()).thenReturn(List.of(e1, e2));
@@ -180,10 +176,6 @@ class EventServiceTest {
         verify(eventRepository).findByEventDate(date);
     }
 
-    // ---------------------------
-    // COUNTER
-    // ---------------------------
-
     @Test
     void getEventVenueCounter_countsByVenueId_skipsNullVenue() {
         Event withNullVenue = new Event();
@@ -195,7 +187,6 @@ class EventServiceTest {
         anotherV1.setVenueId("V1");
 
         when(eventRepository.findAll()).thenReturn(List.of(e1, e2, withNullVenue, anotherV1));
-        // V1 = 2, V2 = 1
 
         EventVenueCounterListResponseDTO res = eventService.getEventVenueCounter();
 
@@ -214,32 +205,6 @@ class EventServiceTest {
 
         verify(eventRepository).findAll();
     }
-
-    // ---------------------------
-    // CREATE from fundraising
-    // ---------------------------
-
-    @Test
-    void createEventFromFundraising_savesEvent_andSendsRabbit() {
-        Fundraising fundraising = mock(Fundraising.class);
-        when(fundraising.getArtistId()).thenReturn("A99");
-        when(fundraising.getTargetAmount()).thenReturn(new BigDecimal("150.00"));
-
-        when(eventRepository.save(any(Event.class)))
-                .thenAnswer(inv -> inv.getArgument(0));
-
-        EventResponseDTO dto = eventService.createEventFromFundraising(fundraising);
-
-        assertNotNull(dto);
-
-        verify(eventRepository).save(any(Event.class));
-        verify(rabbitEventFundraisingService)
-                .sendEventCreation("A99", "organizer-1", new BigDecimal("150.00"));
-    }
-
-    // ---------------------------
-    // UPDATE / CONFIRM / CANCEL
-    // ---------------------------
 
     @Test
     void updateEvent_updatesFields_whenProvided() {

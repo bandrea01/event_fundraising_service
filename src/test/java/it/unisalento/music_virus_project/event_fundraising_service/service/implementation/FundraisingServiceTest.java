@@ -11,6 +11,7 @@ import it.unisalento.music_virus_project.event_fundraising_service.exceptions.Fo
 import it.unisalento.music_virus_project.event_fundraising_service.exceptions.NotFoundException;
 import it.unisalento.music_virus_project.event_fundraising_service.exceptions.SameNameFundraisingException;
 import it.unisalento.music_virus_project.event_fundraising_service.exceptions.SamePlaceAndDateFundraisingException;
+import it.unisalento.music_virus_project.event_fundraising_service.messaging.RabbitEventFundraisingService;
 import it.unisalento.music_virus_project.event_fundraising_service.repositories.FundraisingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,7 @@ class FundraisingServiceTest {
 
     @Mock
     private FundraisingRepository fundraisingRepository;
-
+    @Mock private RabbitEventFundraisingService rabbitEventFundraisingService;
     @Mock
     private EventService eventService;
 
@@ -43,18 +44,8 @@ class FundraisingServiceTest {
     private static final Instant NOW = Instant.parse("2026-02-11T10:00:00Z");
 
     @BeforeEach
-    void setup() {
-        // nothing
-    }
+    void setup() {}
 
-    // ------------------------------------------------------------
-    // Helpers
-    // ------------------------------------------------------------
-
-    /**
-     * Stubs ONLY the getters that mapToDTO() uses.
-     * Keep this tight to avoid UnnecessaryStubbingException: call it only when you actually need mapping.
-     */
     private void stubForMapping(
             Fundraising fundraising,
             String fundraisingId,
@@ -88,10 +79,6 @@ class FundraisingServiceTest {
         return req;
     }
 
-    // ------------------------------------------------------------
-    // getFundraisingById
-    // ------------------------------------------------------------
-
     @Test
     void getFundraisingById_whenNotFound_throws() {
         when(fundraisingRepository.findByFundraisingId("f1")).thenReturn(null);
@@ -117,10 +104,6 @@ class FundraisingServiceTest {
         assertEquals(FundraisingStatus.ACTIVE, out.getStatus());
     }
 
-    // ------------------------------------------------------------
-    // createFundraising
-    // ------------------------------------------------------------
-
     @Test
     void createFundraising_whenSamePlaceAndDate_throws() {
         FundraisingCreateRequestDTO req = buildCreateRequest();
@@ -136,12 +119,21 @@ class FundraisingServiceTest {
         FundraisingCreateRequestDTO req = buildCreateRequest();
 
         when(fundraisingRepository.findByEventDateAndVenueId(req.getEventDate(), req.getVenueId()))
-                .thenReturn(List.of()); // ok
-        when(fundraisingRepository.findByFundraisingName(req.getFundraisingName()))
-                .thenReturn(mock(Fundraising.class)); // name collision
+                .thenReturn(List.of());
+
+        Fundraising existing = new Fundraising(
+                "artist",
+                req.getVenueId(),
+                req.getFundraisingName(),
+                new BigDecimal("100"),
+                FundraisingStatus.ACTIVE,
+                req.getEventDate()
+        );
+        when(fundraisingRepository.findByFundraisingNameAndVenueId(req.getFundraisingName(), req.getVenueId())).thenReturn(existing);
 
         assertThrows(SameNameFundraisingException.class, () -> fundraisingService.createFundraising(req));
     }
+
 
     @Test
     void createFundraising_whenOk_savesAndReturnsDTO() throws Exception {
@@ -149,16 +141,14 @@ class FundraisingServiceTest {
 
         when(fundraisingRepository.findByEventDateAndVenueId(req.getEventDate(), req.getVenueId()))
                 .thenReturn(List.of());
-        when(fundraisingRepository.findByFundraisingName(req.getFundraisingName()))
+        when(fundraisingRepository.findByFundraisingNameAndVenueId(req.getFundraisingName(), req.getVenueId()))
                 .thenReturn(null);
 
-        // capture what gets saved (real entity created inside service)
         ArgumentCaptor<Fundraising> captor = ArgumentCaptor.forClass(Fundraising.class);
 
         Fundraising saved = mock(Fundraising.class);
         when(fundraisingRepository.save(captor.capture())).thenReturn(saved);
 
-        // mapping uses getters of "saved"
         stubForMapping(
                 saved,
                 "f1", req.getFundraisingName(), req.getArtistId(), req.getVenueId(),
@@ -181,10 +171,6 @@ class FundraisingServiceTest {
         assertEquals(req.getTargetAmount(), toSave.getTargetAmount());
         assertEquals(FundraisingStatus.ACTIVE, toSave.getStatus());
     }
-
-    // ------------------------------------------------------------
-    // updateFundraising
-    // ------------------------------------------------------------
 
     @Test
     void updateFundraising_whenNotFound_throws() {
@@ -211,7 +197,6 @@ class FundraisingServiceTest {
         when(fundraisingRepository.findById("id")).thenReturn(Optional.of(fundraising));
 
         when(fundraising.getCurrentAmount()).thenReturn(new BigDecimal("100"));
-        // first call used by if, second call used by mapToDTO -> ACTIVE
         when(fundraising.getStatus()).thenReturn(FundraisingStatus.ACHIEVED, FundraisingStatus.ACTIVE);
 
         FundraisingUpdateRequestDTO req = new FundraisingUpdateRequestDTO();
@@ -219,7 +204,6 @@ class FundraisingServiceTest {
 
         when(fundraisingRepository.save(fundraising)).thenReturn(fundraising);
 
-        // mapping getters (current/target/status/date/expiration)
         when(fundraising.getFundraisingId()).thenReturn("f1");
         when(fundraising.getFundraisingName()).thenReturn("Name");
         when(fundraising.getArtistId()).thenReturn("artist-1");
@@ -238,10 +222,6 @@ class FundraisingServiceTest {
         verify(fundraisingRepository).save(fundraising);
     }
 
-    // ------------------------------------------------------------
-    // addContributionToFundraising
-    // ------------------------------------------------------------
-
     @Test
     void addContributionToFundraising_whenNotFound_throws() {
         when(fundraisingRepository.findById("id")).thenReturn(Optional.empty());
@@ -254,11 +234,9 @@ class FundraisingServiceTest {
         Fundraising fundraising = mock(Fundraising.class);
         when(fundraisingRepository.findById("id")).thenReturn(Optional.of(fundraising));
 
-        // 90 + 10 = 100 -> reached target
         when(fundraising.getCurrentAmount()).thenReturn(new BigDecimal("90"));
         when(fundraising.getTargetAmount()).thenReturn(new BigDecimal("100"));
 
-        // after update, mapping reads current = 100, status = ACHIEVED
         when(fundraising.getCurrentAmount()).thenReturn(new BigDecimal("90"), new BigDecimal("100"));
         when(fundraising.getStatus()).thenReturn(FundraisingStatus.ACHIEVED);
 
@@ -281,10 +259,6 @@ class FundraisingServiceTest {
         verify(fundraisingRepository).save(fundraising);
     }
 
-    // ------------------------------------------------------------
-    // disableFundraisingById
-    // ------------------------------------------------------------
-
     @Test
     void disableFundraisingById_whenNotOwner_throwsForbidden() {
         Fundraising fundraising = mock(Fundraising.class);
@@ -304,6 +278,9 @@ class FundraisingServiceTest {
         when(fundraising.getArtistId()).thenReturn("artist-1");
         when(fundraisingRepository.save(fundraising)).thenReturn(fundraising);
 
+        doNothing().when(rabbitEventFundraisingService)
+                .sendFundraisingRefundRequest(anyString(), anyString());
+
         stubForMapping(
                 fundraising,
                 "f1", "Name", "artist-1", "venue-1",
@@ -319,10 +296,6 @@ class FundraisingServiceTest {
         verify(fundraising).setStatus(FundraisingStatus.CANCELLED);
         verify(fundraisingRepository).save(fundraising);
     }
-
-    // ------------------------------------------------------------
-    // confirmFundraisingById
-    // ------------------------------------------------------------
 
     @Test
     void confirmFundraisingById_whenNotOwner_throwsForbidden() {
@@ -354,15 +327,12 @@ class FundraisingServiceTest {
 
         when(fundraising.getArtistId()).thenReturn("artist-1");
 
-        // 1a chiamata: passa la if (ACHIEVED)
-        // 2a chiamata: mapToDTO vede CONFIRMED
         when(fundraising.getStatus())
                 .thenReturn(FundraisingStatus.ACHIEVED)
                 .thenReturn(FundraisingStatus.CONFIRMED);
 
         when(fundraisingRepository.save(fundraising)).thenReturn(fundraising);
 
-        // mapping calls
         when(fundraising.getFundraisingId()).thenReturn("f1");
         when(fundraising.getFundraisingName()).thenReturn("Name");
         when(fundraising.getVenueId()).thenReturn("venue-1");
@@ -380,10 +350,6 @@ class FundraisingServiceTest {
         verify(fundraisingRepository).save(fundraising);
         verify(eventService).createEventFromFundraising(fundraising);
     }
-
-    // ------------------------------------------------------------
-    // disableFundraisingsByUserId (simple smoke)
-    // ------------------------------------------------------------
 
     @Test
     void disableFundraisingsByUserId_whenRoleOther_returnsEmptyListDTO() {

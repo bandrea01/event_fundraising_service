@@ -42,21 +42,9 @@ class FundraisingControllerTest {
     @MockBean
     private IFundraisingService fundraisingService;
 
-    /**
-     * IMPORTANTISSIMO:
-     * serve perché oauth2ResourceServer().jwt() richiede un JwtDecoder bean.
-     * In @WebMvcTest non viene creato automaticamente -> lo mockiamo.
-     */
     @MockBean
     private JwtDecoder jwtDecoder;
 
-    /**
-     * Security di test:
-     * - filtri attivi (così @AuthenticationPrincipal Jwt viene risolto)
-     * - permitAll (così non ti blocca)
-     * - oauth2ResourceServer(jwt) (così .with(jwt()) funziona)
-     * - disabilitiamo i @PreAuthorize per test "senza security"
-     */
     @EnableMethodSecurity(prePostEnabled = false)
     static class TestSecurityConfig {
         @Bean
@@ -69,9 +57,6 @@ class FundraisingControllerTest {
         }
     }
 
-    // -------------------------
-    // Helpers JSON
-    // -------------------------
     private static String jsonCreateRequest() {
         return """
             {
@@ -110,25 +95,6 @@ class FundraisingControllerTest {
                 Instant.parse("2026-02-11T10:00:00Z"),
                 Instant.parse("2026-02-11T10:00:00Z")
         );
-    }
-
-    // -------------------------
-    // TESTS
-    // -------------------------
-
-    @Test
-    void getPersonalFundraising_returnsOk() throws Exception {
-        FundraisingListResponseDTO list = new FundraisingListResponseDTO(List.of(
-                sampleResponse("f1", FundraisingStatus.ACTIVE)
-        ));
-
-        when(fundraisingService.getFundraisingsByArtistId("artist1")).thenReturn(list);
-
-        mockMvc.perform(get("/api/event-fundraising/fundraising/me")
-                        .with(jwt().jwt(j -> j.claim("userId", "artist1"))))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
     @Test

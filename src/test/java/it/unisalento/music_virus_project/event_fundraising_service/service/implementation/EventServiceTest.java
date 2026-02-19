@@ -60,7 +60,7 @@ class EventServiceTest {
         e2.setFundraisingId("F2");
         e2.setArtistId("A2");
         e2.setVenueId("V2");
-        e2.setStatus(EventStatus.PENDING);
+        e2.setStatus(EventStatus.CONFIRMED);
         e2.setEventName("Event 2");
         e2.setEventDate(Instant.parse("2026-02-01T10:00:00Z"));
     }
@@ -274,19 +274,6 @@ class EventServiceTest {
     }
 
     @Test
-    void confirmEvent_setsConfirmed() {
-        e1.setStatus(EventStatus.PENDING);
-
-        when(eventRepository.findByEventId("E1")).thenReturn(e1);
-        when(eventRepository.save(any(Event.class))).thenAnswer(inv -> inv.getArgument(0));
-
-        EventResponseDTO dto = eventService.confirmEvent("E1");
-
-        assertEquals(EventStatus.CONFIRMED, dto.getStatus());
-        verify(eventRepository).save(any(Event.class));
-    }
-
-    @Test
     void cancelEventById_setsCancelled() {
         when(eventRepository.findByEventId("E1")).thenReturn(e1);
         when(eventRepository.save(any(Event.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -296,10 +283,6 @@ class EventServiceTest {
         assertEquals(EventStatus.CANCELLED, dto.getStatus());
         verify(eventRepository).save(any(Event.class));
     }
-
-    // ---------------------------
-    // DISABLE (artist / venue / switch by role)
-    // ---------------------------
 
     @Test
     void disableArtistEvents_setsCancelled_forAllArtistEvents() {

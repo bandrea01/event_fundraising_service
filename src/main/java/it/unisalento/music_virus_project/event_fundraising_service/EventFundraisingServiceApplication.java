@@ -5,11 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-@EnableScheduling //for scheduled tasks
+@EnableScheduling
 public class EventFundraisingServiceApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(EventFundraisingServiceApplication.class, args);
 	}
-
 }

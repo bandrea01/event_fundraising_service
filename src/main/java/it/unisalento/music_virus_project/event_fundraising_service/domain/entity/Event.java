@@ -34,7 +34,7 @@ public class Event {
         this.eventDate = fundraising.getEventDate();
         this.artistId = fundraising.getArtistId();
         this.venueId = fundraising.getVenueId();
-        this.status = EventStatus.PENDING;
+        this.status = EventStatus.CONFIRMED;
         this.venuePromotion = fundraising.getVenuePromotion();
         this.createdAt = Instant.now();
     }

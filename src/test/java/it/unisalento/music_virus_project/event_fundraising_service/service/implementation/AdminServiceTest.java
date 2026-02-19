@@ -46,8 +46,7 @@ class AdminServiceTest {
         )).thenReturn(5);
 
         when(eventRepository.countEventsByStatusIn(
-                List.of(EventStatus.CONFIRMED,
-                        EventStatus.PENDING)
+                List.of(EventStatus.CONFIRMED)
         )).thenReturn(3);
 
         EventsStatisticDTO result = adminService.getEventsStatistics();
@@ -77,8 +76,7 @@ class AdminServiceTest {
 
         verify(eventRepository, times(1))
                 .countEventsByStatusIn(
-                        List.of(EventStatus.CONFIRMED,
-                                EventStatus.PENDING)
+                        List.of(EventStatus.CONFIRMED)
                 );
 
         verifyNoMoreInteractions(fundraisingRepository, eventRepository);
@@ -112,8 +110,7 @@ class AdminServiceTest {
         );
 
         assertEquals(
-                List.of(EventStatus.CONFIRMED,
-                        EventStatus.PENDING),
+                List.of(EventStatus.CONFIRMED),
                 eventCaptor.getValue()
         );
     }

@@ -142,18 +142,6 @@ public class EventService implements IEventService {
 
     @Override
     @Transactional
-    public EventResponseDTO confirmEvent(String eventId) {
-        Event event = eventRepository.findByEventId(eventId);
-        if (event == null) {
-            throw new NotFoundException("Errore: Evento non trovato!");
-        }
-        event.setStatus(EventStatus.CONFIRMED);
-        event = eventRepository.save(event);
-        return mapToDTO(event);
-    }
-
-    @Override
-    @Transactional
     public EventResponseDTO cancelEventById(String eventId) {
         Event event = eventRepository.findByEventId(eventId);
         if (event == null) {

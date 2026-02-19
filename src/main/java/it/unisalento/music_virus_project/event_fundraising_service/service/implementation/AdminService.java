@@ -33,7 +33,7 @@ public class AdminService implements IAdminService {
         ));
         statsDTO.addCounter(new GenericCounterDTO("EVENTS",
                 Math.toIntExact(eventRepository.countEventsByStatusIn(
-                        List.of(EventStatus.CONFIRMED, EventStatus.PENDING)
+                        List.of(EventStatus.CONFIRMED)
                 ))
         ));
 

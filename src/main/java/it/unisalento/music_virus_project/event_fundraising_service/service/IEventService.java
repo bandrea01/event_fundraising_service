@@ -18,7 +18,6 @@ public interface IEventService {
     EventVenueCounterListResponseDTO getEventVenueCounter();
     EventResponseDTO updateEvent(String eventId, EventUpdateRequestDTO updateRequest);
     EventResponseDTO createEventFromFundraising(Fundraising fundraising);
-    EventResponseDTO confirmEvent(String eventId);
     EventResponseDTO cancelEventById(String eventId);
     EventListResponseDTO disableArtistEvents(String artistId);
     EventListResponseDTO disableVenueEvents(String venueId);

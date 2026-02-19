@@ -1,6 +1,7 @@
 package it.unisalento.music_virus_project.event_fundraising_service.controllers;
 
 import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.FundraisingStatus;
+import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.VenuePromotionEnum;
 import it.unisalento.music_virus_project.event_fundraising_service.dto.fundraising.FundraisingCreateRequestDTO;
 import it.unisalento.music_virus_project.event_fundraising_service.dto.fundraising.FundraisingListResponseDTO;
 import it.unisalento.music_virus_project.event_fundraising_service.dto.fundraising.FundraisingResponseDTO;
@@ -100,11 +101,12 @@ class FundraisingControllerTest {
         return new FundraisingResponseDTO(
                 id,
                 "My Fundraising",
-                "artist1",
-                "venue1",
+                "artist",
+                "venue",
                 BigDecimal.ZERO,
                 new BigDecimal("100"),
                 status,
+                VenuePromotionEnum.DRINK_DISCOUNT_10_PERCENT,
                 Instant.parse("2026-02-11T10:00:00Z"),
                 Instant.parse("2026-02-11T10:00:00Z")
         );

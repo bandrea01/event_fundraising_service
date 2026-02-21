@@ -2,7 +2,6 @@ package it.unisalento.music_virus_project.event_fundraising_service.service.impl
 
 import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Event;
 import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Feedback;
-import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Fundraising;
 import it.unisalento.music_virus_project.event_fundraising_service.domain.entity.Role;
 import it.unisalento.music_virus_project.event_fundraising_service.domain.enums.EventStatus;
 import it.unisalento.music_virus_project.event_fundraising_service.dto.event.*;
@@ -18,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
@@ -34,9 +32,6 @@ class EventServiceTest {
 
     @Mock
     private FeedbackRepository feedbackRepository;
-
-    @Mock
-    private RabbitEventFundraisingService rabbitEventFundraisingService;
 
     @InjectMocks
     private EventService eventService;
@@ -307,10 +302,6 @@ class EventServiceTest {
         assertEquals(0, res.getEvents().size());
         verifyNoInteractions(eventRepository);
     }
-
-    // ---------------------------
-    // FEEDBACK
-    // ---------------------------
 
     @Test
     void getEventFeedbacks_mapsList() {

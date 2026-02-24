@@ -34,7 +34,7 @@ public class EventFundraisingPublisher {
         log.info("Publishing FundraisingRefunded for fundraisingId= " + event.getFundraisingId());
         rabbitTemplate.convertAndSend(eventFundraisingExchange.getName(),
                 EventFundraisingsRoutingKeys.FUNDRAISING_REFUNDED,
-                event.getFundraisingId());
+                event);
         log.info("Published FundraisingRefundedEvent");
     }
 

@@ -15,9 +15,10 @@ public class RabbitEventFundraisingService {
         this.publisher = publisher;
     }
 
-    public void sendEventCreation(String eventId, String artistId, BigDecimal amount) {
+    public void sendEventCreation(String eventId, String fundraisingId, String artistId, BigDecimal amount) {
         EventCreationDTO event = new EventCreationDTO();
         event.setEventId(eventId);
+        event.setFundraisingId(fundraisingId);
         event.setArtistId(artistId);
         event.setAmount(amount);
         publisher.publishEventCreation(event);

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 public class EventFundraisingListener {
 
     private static final Logger log = LoggerFactory.getLogger(EventFundraisingListener.class);
-    private static final String queue = "${app.rabbitmq.contribution-events-queue}";
 
     private final IFundraisingService fundraisingService;
 
@@ -20,7 +19,7 @@ public class EventFundraisingListener {
         this.fundraisingService = fundraisingService;
     }
 
-    @RabbitListener(queues = queue)
+    @RabbitListener(queues="${app.rabbitmq.contribution-events-queue}")
     public void handleContributionAdded(@Payload ContributionEventDTO event) {
         log.info("Received contribution fundraisingId={} amount={}", event.getFundraisingId(), event.getAmount());
         fundraisingService.addContributionToFundraising(event.getFundraisingId(), event.getAmount());

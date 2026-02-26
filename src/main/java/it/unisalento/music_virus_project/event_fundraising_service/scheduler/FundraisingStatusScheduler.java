@@ -27,7 +27,7 @@ public class FundraisingStatusScheduler {
         this.eventRepository = eventRepository;
     }
 
-    @Scheduled(fixedDelay = 10 * 60 * 1000)
+    @Scheduled(fixedDelay = 60 * 1000)
     public void scheduleNotAchievedFundraising() {
         List<Fundraising> fundraisings = fundraisingRepository.findByStatus(FundraisingStatus.ACTIVE);
 
